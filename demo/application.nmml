@@ -3,17 +3,18 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="HaxeVis" package="HaxeVis" version="1.0.0" company="Yavor" />
+	<meta title="HaxeVis Demo" package="com.stepasyuk_paunov.haxevis" version="1.0.0" company="Null" />
 	
 	<!-- output -->
-	<app main="Main" file="HaxeVis" path="bin" />
+	<app main="com.demo.haxevis.Main" file="HaxeVis" path="bin" />
 	
-	<window background="#000000" fps="60" />
+	<window background="#FFFFFF" fps="60" />
 	<window width="800" height="480" unless="mobile" />
 	<window orientation="landscape" vsync="true" antialiasing="0" if="cpp" />
 	
 	<!-- classpath, haxe libs -->
-	<source path="src" />
+	<source name="src" />
+	<source path="../src" />
 	<haxelib name="nme" />
 	
 	<!-- assets -->
