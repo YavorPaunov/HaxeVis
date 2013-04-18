@@ -10,12 +10,13 @@ class DataSet
 	
 	private var _entries:Array<DataSetEntry>;
 	
-    public function new(? entries:Array<DataSetEntry> ) {
+    public function new(? entries:Array<DataSetEntry>) {
 		if (entries != null) {
 			_entries = entries;
 		} else {
 			_entries = new Array();
 		}
+
     }
 	
 	public function getSum():Float {
@@ -41,7 +42,7 @@ class DataSet
 	{
 		return _entries;
 	}
-	
+
 	public var entries(get_entries, null):Array<DataSetEntry>;
 
 }
