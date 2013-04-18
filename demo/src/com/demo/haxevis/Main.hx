@@ -33,12 +33,14 @@ class Main extends Sprite
 		set.entries.push(new DataSetEntry("Second", 10));
 		set.entries.push(new DataSetEntry("Third", 15));
 		set.entries.push(new DataSetEntry("Fourth", 20));
-		set.entries.push(new DataSetEntry("Fifth", 5));
-		set.entries.push(new DataSetEntry("Sixth", 8));
-		set.entries.push(new DataSetEntry("Seventh", 15));
+		//set.entries.push(new DataSetEntry("Fifth", 5));
+		//set.entries.push(new DataSetEntry("Sixth", 8));
+		//set.entries.push(new DataSetEntry("Seventh", 15));
 		
 		var chart:PieChart = new PieChart(set);
-		chart.x = chart.y = 180;
+		chart.x = chart.y = 15;
+		
+		chart.showLegend = true;
 		addChild(chart);
 	}
 	

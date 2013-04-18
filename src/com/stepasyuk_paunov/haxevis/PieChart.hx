@@ -10,18 +10,26 @@ import nme.Lib;
 class PieChart extends Sprite
 {
 
-	public function new(dataSet:DataSet) 
+	private var _showLegend:Bool;
+	private var _legend:Legend;
+	
+	private var _data:DataSet;
+	
+	
+	public function new(data:DataSet) 
 	{
 		super();
+		_data = data;
+		_showLegend = false;
 		
-		var ratios:Array<Float> = dataSet.getRatios();
+		var ratios:Array<Float> = _data.getRatios();
 		var degrees:Float = 0;
 		
-		//graphics.lineStyle(1);
-		for (ratio in ratios) 
+		for (i in 0...ratios.length) 
 		{
-			//if(degrees < 120)
-			drawWedge(150, degrees, degrees + ratio * 360, 0xEEEEEE);
+			var ratio:Float = ratios[i];
+			var entry:DataSetEntry = _data.entries[i];
+			drawWedge(80, degrees, degrees + ratio * 360, entry.color);
 			degrees += ratio * 360;
 		}
 	}
@@ -33,31 +41,34 @@ class PieChart extends Sprite
 		end *= degreesPerRadian;
 		var step:Float = degreesPerRadian;
 		
-		graphics.beginFill(Std.int(0xDDDDDD * Math.random()));
-		graphics.moveTo(0, 0);
+		graphics.beginFill(color);
+		graphics.moveTo(radius, radius);
 		var theta:Float = start;
 		while (theta < end) {
-			graphics.lineTo(x + radius * Math.cos(theta), y + radius * Math.sin(theta));
+			graphics.lineTo((x + radius * Math.cos(theta))+radius, (y + radius * Math.sin(theta))+radius);
 			theta += Math.min(step, end - theta);
 		}
-		graphics.lineTo(x + radius * Math.cos(end), y + radius * Math.sin(end));
-		graphics.lineTo(x, y);
-		
-		
-		//ax = x - Math.cos(angle) * radius;
-		//ay = y - Math.sin(angle) * radius;
-		// increment our angle
-		//angle += theta;
-		// find the angle halfway between the last angle and the new
-		//angleMid = angle - (theta / 2);
-		// calculate our end point
-		//bx = ax + Math.cos(angle) * radius;
-		//by = ay + Math.sin(angle) * yRadius;
-		// calculate our control point
-		//cx = ax + Math.cos(angleMid) * (radius / Math.cos(theta / 2));
-		//cy = ay + Math.sin(angleMid) * (yRadius / Math.cos(theta / 2));
-		// draw the arc segment
-		//target.curveTo(cx, cy, bx, by);
+		graphics.lineTo((x + radius * Math.cos(end))+radius, (y + radius * Math.sin(end))+radius);
+		graphics.lineTo(x+radius, y+radius);
 	}
+	
+	private function get_showLegend():Bool 
+	{
+		return _showLegend;
+	}
+	
+	private function set_showLegend(value:Bool):Bool 
+	{
+		if (_legend != null) {			
+			_legend.setValues(_data);
+		} else {
+			_legend = new Legend(_data);
+			_legend.x = 200;
+		}
+		addChild(_legend);
+		return _showLegend = value;
+	}
+	
+	public var showLegend(get_showLegend, set_showLegend):Bool;
 	
 }
