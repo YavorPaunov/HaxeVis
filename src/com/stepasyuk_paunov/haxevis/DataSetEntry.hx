@@ -1,5 +1,5 @@
 package com.stepasyuk_paunov.haxevis;
-
+import com.stepasyuk_paunov.haxevis.LineChartDataSetEntry;
 /**
  * ...
  * @author Yavor
@@ -40,12 +40,12 @@ class DataSetEntry
 		return _value;
 	}
 	
+	public var value(get_value, set_value):Float;
+
 	private function set_value(value:Float):Float 
 	{
 		return _value = value;
 	}
-	
-	public var value(get_value, set_value):Float;
 	
 	private function get_color():Int 
 	{
