@@ -9,6 +9,9 @@ import nme.Lib;
 
 class PieChart extends Sprite
 {
+	// Height is 160, unless legend is taller
+	// Width is 160 + width of legend
+	// TODO: Make constants for those values
 
 	private var _showLegend:Bool;
 	private var _legend:Legend;
