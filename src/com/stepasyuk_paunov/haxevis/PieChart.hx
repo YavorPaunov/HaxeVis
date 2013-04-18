@@ -25,6 +25,11 @@ class PieChart extends Sprite
 		_data = data;
 		_showLegend = false;
 		
+		#if cpp
+		// necessary for antialias
+		cacheAsBitmap = true;
+		#end
+		
 		var ratios:Array<Float> = _data.getRatios();
 		var degrees:Float = 0;
 		

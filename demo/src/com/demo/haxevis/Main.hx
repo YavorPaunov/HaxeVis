@@ -42,12 +42,13 @@ class Main extends Sprite
 		chart.x = chart.y = 15;
 		chart.showLegend = true;
 		addChild(chart);
-		Lib.trace(chart.height);
 		
-		var grid:Grid = new Grid(80, -20, 6, 50, -10, 5);
-		grid.x = 15;
+		var grid:Grid = new Grid(30, -25, 8, 10, -40, 10);
+		grid.x = 16;
 		grid.y = chart.y + chart.height + 20;
 		addChild(grid);
+		
+		
 	}
 	
 	static public function main() 

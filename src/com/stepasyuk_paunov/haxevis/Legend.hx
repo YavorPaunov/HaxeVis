@@ -34,7 +34,7 @@ class Legend extends Sprite
 			graphics.drawRect(0, i * 20 + 6, 20, 8);
 			graphics.endFill();
 		}
-		
+		// TODO: Format text
 	}
 	
 	public function setValues(data:DataSet) 
@@ -66,6 +66,7 @@ class Legend extends Sprite
 			graphics.drawRect(0, i * 20 + 6, 20, 8);
 			graphics.endFill();
 		}
+		// TODO: Format text
 	}
 	
 }
