@@ -30,6 +30,10 @@ class PieChart extends Sprite
 		cacheAsBitmap = true;
 		#end
 		
+		draw();
+	}
+	
+	private function draw():Void {
 		var ratios:Array<Float> = _data.getRatios(DataSetItem.X);
 		var degrees:Float = 0;
 		
@@ -42,7 +46,7 @@ class PieChart extends Sprite
 		}
 	}
 	
-	function drawWedge(radius:Float, start:Float, end:Float, color:Int):Void
+	private function drawWedge(radius:Float, start:Float, end:Float, color:Int):Void
 	{		
 		var degreesPerRadian:Float = Math.PI / 180;
 		start *= degreesPerRadian;
