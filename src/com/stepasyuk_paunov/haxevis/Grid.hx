@@ -16,8 +16,10 @@ class Grid extends Sprite
 	
 	// Height is 160
 	// Width is 160
-	private static inline var HEIGHT:Float = 600;
-	private static inline var WIDTH:Float = 1000;
+
+	private static inline var HEIGHT:Float = 300;
+	private static inline var WIDTH:Float = 300;
+
 	
 	private static inline var X:Float = 100;
 	private static inline var Y:Float = 100;
@@ -31,19 +33,22 @@ class Grid extends Sprite
 	private var _yDel:Float; // Number of delimeters on the y axis
 	
 	private var _ratio:Point;
-	private var _xZeroPos:Float;
-	private var _yZeroPos:Float;
+	
+	private var _lineAtZero:Bool;
+	private var _alwaysShowZero:Bool;
 	
 	public function new(xTop:Float, xBottom:Float, xDel:Float, yTop:Float, yBottom:Float, yDel:Float) 
 	{
 		super();
 		cacheAsBitmap = true;
+		_lineAtZero = false;
+		_alwaysShowZero = true;
 		
-		if (xTop <= xBottom) {
+		if (xTop <= _xBottom) {
 			throw new Error("Top must be higher than bottom.");
 		}
 		
-		if (yTop <= yBottom) {
+		if (_yTop <= _yBottom) {
 			throw new Error("Top must be higher than bottom.");			
 		}
 		
@@ -54,48 +59,66 @@ class Grid extends Sprite
 		_yBottom = yBottom;
 		_yDel = yDel;
 		
-		// For debugging:
-		//graphics.beginFill(0xAA0000, 0.1);
-		//graphics.drawRect(X, Y, WIDTH, HEIGHT);
-		//graphics.endFill();
-		//
-		//graphics.lineStyle(1, 0, 0.5);
-		//graphics.drawRect(0, 0, X*2 + WIDTH, Y*2 + HEIGHT);
-		// End
+		draw();
+	}
+	
+	private function draw():Void {
+		graphics.clear();
+		while (numChildren > 0) {
+			removeChildAt(0);
+		}
 		
-		var xDif:Float = Math.max(xTop - xBottom, Math.max(xTop, -xBottom));
-		Lib.trace(xDif);
+		var xDif:Float = _xTop - _xBottom;
+		var yDif:Float = _yTop - _yBottom;
+		
+		if (_alwaysShowZero) {
+			xDif = Math.max(xDif, Math.max(_xTop, -_xBottom));
+			yDif = Math.max(yDif, Math.max(_yTop, -_yBottom));
+		}
+		
 		var xRatio:Float = WIDTH / xDif;
+		var yRatio:Float = HEIGHT / yDif;
 		
-		var yDif:Float = Math.max(yTop - yBottom, Math.max(yTop, -yBottom));
-		var yRatio:Float = HEIGHT/yDif;
 		_ratio = new Point(xRatio, yRatio);
-		
-		if (xBottom < 0) {
-			_xZeroPos = X - xBottom * xRatio;
+		var xZeroPos:Float;
+		if (_xBottom < 0) {
+			xZeroPos = X - _xBottom * xRatio;
 		} else {
-			_xZeroPos = X;
+			xZeroPos = X;
 		}
 		
-		if (yBottom < 0) {
-			_yZeroPos = Y+HEIGHT + yBottom * yRatio;
+		var yZeroPos:Float;
+		if (_yBottom < 0) {
+			yZeroPos = Y+HEIGHT + _yBottom * yRatio;
 		} else {
-			_yZeroPos = Y+HEIGHT;
+			yZeroPos = Y+HEIGHT;
 		}
+		
 		
 		graphics.beginFill(0, 1);
-		var xLowestDel:Float = Math.min(xBottom - xBottom % xDel, 0);
-		var xHighestDel:Float = Math.max(xTop - xTop % xDel, 0);
+		var xLowestDel:Float = _xBottom - _xBottom % _xDel;
+		var xHighestDel:Float = _xTop - _xTop % _xDel;
+		if (_alwaysShowZero) {
+			xLowestDel = Math.min(xLowestDel, 0);
+			xHighestDel = Math.max(xHighestDel, 0);
+		}
 		var xCurDel:Float = xLowestDel;
 		while (xCurDel <= xHighestDel) {
-			var targetX:Float = xCurDel * xRatio +_xZeroPos; 
-			var targetY:Float =_yZeroPos;
-			graphics.drawRect(targetX - 0.5, targetY-2, 1, 4);
+			// xCurDel or (xCurDel - xLowestDel)
+			var targetX:Float = Math.min(xCurDel, xCurDel - xLowestDel) * xRatio +xZeroPos; 
+			var targetY:Float;
+			if (_lineAtZero) {
+				targetY = yZeroPos;
+			} else {
+				targetY = Y + HEIGHT;
+			}
+			graphics.drawRect(targetX - 0.5, targetY, 1, 4);
 			
-			if(xCurDel != 0){
+			if(xCurDel != 0 || !_lineAtZero){
 				var valueStringRaw:String = Std.string(xCurDel);
 				var floatingPointIndex:Int = valueStringRaw.indexOf(".");
 				var valueString:String;
+				
 				if(floatingPointIndex >= 0){
 					valueString = valueStringRaw.substr(0, floatingPointIndex + 3);
 				} else {
@@ -110,19 +133,29 @@ class Grid extends Sprite
 				valueField.y = targetY + 2;
 				addChild(valueField);
 			}
-			xCurDel += xDel;
+			xCurDel += _xDel;
 			
 		}
 		
-		var yLowestDel:Float = Math.min(yBottom - yBottom % yDel, 0);
-		var yHighestDel:Float = Math.max(yTop - yTop % yDel, 0);
+		var yLowestDel:Float = _yBottom - _yBottom % _yDel;
+		var yHighestDel:Float =_yTop - _yTop % _yDel;
+		if (_alwaysShowZero) {
+			yLowestDel = Math.min(yLowestDel, 0);
+			yHighestDel = Math.max(yHighestDel, 0);
+		}
 		var yCurDel:Float = yLowestDel;
 		while (yCurDel <= yHighestDel) {
-			var targetX:Float =_xZeroPos; 
-			var targetY:Float =_yZeroPos - yCurDel * yRatio;
-			graphics.drawRect(targetX - 2, targetY-0.5, 4, 1);
+			var targetX:Float;
+			if (_lineAtZero) {
+				targetX = xZeroPos;
+			} else {
+				targetX = X;
+			}
+			//Math.min(xCurDel, xCurDel - xLowestDel) * xRatio +xZeroPos; 
+			var targetY:Float = yZeroPos - Math.min(yCurDel, yCurDel - yLowestDel) * yRatio;
+			graphics.drawRect(targetX - 4, targetY-0.5, 4, 1);
 			
-			if(yCurDel != 0){
+			if(yCurDel != 0 || !_lineAtZero){
 				var valueStringRaw:String = Std.string(yCurDel);
 				var floatingPointIndex:Int = valueStringRaw.indexOf(".");
 				var valueString:String;
@@ -140,24 +173,174 @@ class Grid extends Sprite
 				valueField.y = targetY - valueField.height / 2;
 				addChild(valueField);
 			}
-			yCurDel += yDel;
+			yCurDel += _yDel;
 		}
 		graphics.endFill();
 		
-		
-		Lib.trace(xLowestDel);
-		Lib.trace(xHighestDel);
-		
 		graphics.lineStyle(1, 0);
-		graphics.moveTo(_xZeroPos, Y);
-		graphics.lineTo(_xZeroPos, Y + HEIGHT);
-		
-		graphics.moveTo(X,_yZeroPos);
-		graphics.lineTo(X + WIDTH,_yZeroPos);
-		
+		if(_lineAtZero){
+			graphics.moveTo(xZeroPos, Y);
+			graphics.lineTo(xZeroPos, Y + HEIGHT);
+			
+			graphics.moveTo(X,yZeroPos);
+			graphics.lineTo(X + WIDTH, yZeroPos);
+		} else {
+			graphics.moveTo(X, Y);
+			graphics.lineTo(X, Y + HEIGHT);
+			
+			graphics.moveTo(X, Y+HEIGHT);
+			graphics.lineTo(X + WIDTH, Y+HEIGHT);
+		}
+		graphics.lineStyle();
 	}
 	
 	private function toGridPoint(p:Point):Point {
-		return new Point(_xZeroPos + p.x * _ratio.x, _yZeroPos - p.y * _ratio.y);
+		var x:Float, y:Float;
+		//if (_alwaysShowZero) {
+		if (_xBottom >= 0) {
+			x = X;				
+		} else if (_xTop <= 0) {
+			x = X + WIDTH;
+		} else {
+			x = X - _xBottom * _ratio.x;
+		}
+		
+		// Debugging:
+		//graphics.lineStyle(3, 0xee0000);
+		//graphics.moveTo(x, Y);
+		//graphics.lineTo(x, Y + HEIGHT);
+		
+		x += p.x * _ratio.x;
+		
+		if (_yBottom >= 0) {
+			y = Y + HEIGHT;
+		} else if (_yTop <= 0) {
+			y = Y;
+		} else {
+			y = Y + HEIGHT + _yBottom * _ratio.y;
+		}
+		
+		// Debugging:
+		//graphics.moveTo(X, y);
+		//graphics.lineTo(X + WIDTH, y);
+		//graphics.lineStyle();
+		
+		y -= p.y * _ratio.y;
+
+		return new Point(x, y);
+
 	}
+	
+	private function get_xTop():Float 
+	{
+		return _xTop;
+	}
+	
+	private function set_xTop(value:Float):Float 
+	{
+		_xTop = value;
+		draw();
+		return _xTop;
+	}
+	
+	public var xTop(get_xTop, set_xTop):Float;
+	
+	private function get_xBottom():Float 
+	{
+		return _xBottom;
+	}
+	
+	private function set_xBottom(value:Float):Float 
+	{
+		_xBottom = value;
+		draw();
+		return _xBottom;
+	}
+	
+	public var xBottom(get_xBottom, set_xBottom):Float;
+	
+	private function get_xDel():Float 
+	{
+		return _xDel;
+	}
+	
+	private function set_xDel(value:Float):Float 
+	{
+		_xDel = value;
+		draw();
+		return _xDel;
+	}
+	
+	public var xDel(get_xDel, set_xDel):Float;
+	
+	private function get_yTop():Float 
+	{
+		return _yTop;
+	}
+	
+	private function set_yTop(value:Float):Float 
+	{
+		_yTop = value;
+		draw();
+		return _yTop;
+	}
+	
+	public var yTop(get_yTop, set_yTop):Float;
+	
+	private function get_yBottom():Float 
+	{
+		return _yBottom;
+	}
+	
+	private function set_yBottom(value:Float):Float 
+	{
+		
+		_yBottom = value;
+		draw();
+		return _yBottom;
+	}
+	
+	public var yBottom(get_yBottom, set_yBottom):Float;
+	
+	private function get_yDel():Float 
+	{
+		return _yDel;
+	}
+	
+	private function set_yDel(value:Float):Float 
+	{
+		_yDel = value;
+		draw();
+		return _yDel;
+	}
+	
+	public var yDel(get_yDel, set_yDel):Float;
+	
+	private function get_lineAtZero():Bool 
+	{
+		return _lineAtZero;
+	}
+	
+	private function set_lineAtZero(value:Bool):Bool 
+	{
+		_lineAtZero = value;
+		draw();
+		return _lineAtZero;
+	}
+	
+	public var lineAtZero(get_lineAtZero, set_lineAtZero):Bool;
+	
+	private function get_alwaysShowZero():Bool 
+	{
+		return _alwaysShowZero;
+	}
+	
+	private function set_alwaysShowZero(value:Bool):Bool 
+	{
+		_alwaysShowZero = value;
+		draw();
+		return _alwaysShowZero;
+	}
+	
+	public var alwaysShowZero(get_alwaysShowZero, set_alwaysShowZero):Bool;
 }

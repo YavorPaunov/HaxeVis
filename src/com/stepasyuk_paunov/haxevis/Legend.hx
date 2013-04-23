@@ -18,8 +18,8 @@ class Legend extends Sprite
 		super();
 		_data = data;
 		_textFields = new Array();
-		for (i in 0..._data.entries.length) {
-			var entry:DataSetEntry = _data.entries[i];
+		for (i in 0..._data.items.length) {
+			var entry:DataSetItem = _data.items[i];
 			// Add field
 			var field:TextField = new TextField();
 			field.text = entry.name;
@@ -40,13 +40,13 @@ class Legend extends Sprite
 	public function setValues(data:DataSet) 
 	{
 		_data = data;
-		while (_data.entries.length > _textFields.length) {
+		while (_data.items.length > _textFields.length) {
 			_textFields.pop();
 		}
 		graphics.clear();
 		
-		for (i in 0..._data.entries.length) {
-			var entry:DataSetEntry = _data.entries[i];
+		for (i in 0..._data.items.length) {
+			var entry:DataSetItem = _data.items[i];
 			var field:TextField;
 			// Add field, or reuse one already existing
 			if(_textFields[i] != null){
