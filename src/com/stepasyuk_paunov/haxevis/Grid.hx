@@ -40,7 +40,7 @@ class Grid extends Sprite
 		super();
 		cacheAsBitmap = true;
 		_lineAtZero = false;
-		_alwaysShowZero = false;
+		_alwaysShowZero = true;
 		
 		if (xTop <= _xBottom) {
 			throw new Error("Top must be higher than bottom.");
@@ -150,7 +150,7 @@ class Grid extends Sprite
 				targetX = X;
 			}
 			//Math.min(xCurDel, xCurDel - xLowestDel) * xRatio +xZeroPos; 
-			var targetY:Float =yZeroPos - Math.min(yCurDel, yCurDel - yLowestDel) * yRatio;
+			var targetY:Float = yZeroPos - Math.min(yCurDel, yCurDel - yLowestDel) * yRatio;
 			graphics.drawRect(targetX - 4, targetY-0.5, 4, 1);
 			
 			if(yCurDel != 0 || !_lineAtZero){
@@ -195,14 +195,35 @@ class Grid extends Sprite
 	private function toGridPoint(p:Point):Point {
 		var x:Float, y:Float;
 		//if (_alwaysShowZero) {
-			x = X + (p.x - _xBottom) * _ratio.x;
-			y = Y + HEIGHT + (_yBottom - p.y) * _ratio.y;
-		//} else {
-			//x = X + (p.x - _xBottom) * _ratio.x;
-			//y = Y+HEIGHT + (_yBottom - p.y) * _ratio.y;
-		//}
+		if (_xBottom >= 0) {
+			x = X;				
+		} else if (_xTop <= 0) {
+			x = X + WIDTH;
+		} else {
+			x = X - _xBottom * _ratio.x;
+		}
 		
-		//Y+HEIGHT + _yBottom * yRatio
+		// Debugging:
+		//graphics.lineStyle(3, 0xee0000);
+		//graphics.moveTo(x, Y);
+		//graphics.lineTo(x, Y + HEIGHT);
+		
+		x += p.x * _ratio.x;
+		
+		if (_yBottom >= 0) {
+			y = Y + HEIGHT;
+		} else if (_yTop <= 0) {
+			y = Y;
+		} else {
+			y = Y + HEIGHT + _yBottom * _ratio.y;
+		}
+		
+		// Debugging:
+		//graphics.moveTo(X, y);
+		//graphics.lineTo(X + WIDTH, y);
+		//graphics.lineStyle();
+		
+		y -= p.y * _ratio.y;
 		
 		return new Point(x, y);
 	}
