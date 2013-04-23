@@ -26,6 +26,7 @@ class Grid extends Sprite
 	private var _xTop:Float;
 	private var _xBottom:Float;
 	private var _xDel:Float; // Number of delimeters on the x axis
+	
 	private var _yTop:Float;
 	private var _yBottom:Float;
 	private var _yDel:Float; // Number of delimeters on the y axis
@@ -34,13 +35,15 @@ class Grid extends Sprite
 	
 	private var _lineAtZero:Bool;
 	private var _alwaysShowZero:Bool;
+	private var _showGrid:Bool;
 	
 	public function new(xTop:Float, xBottom:Float, xDel:Float, yTop:Float, yBottom:Float, yDel:Float) 
 	{
 		super();
 		cacheAsBitmap = true;
-		_lineAtZero = false;
+		_lineAtZero = true;
 		_alwaysShowZero = true;
+		_showGrid = true;
 		
 		if (xTop <= _xBottom) {
 			throw new Error("Top must be higher than bottom.");
@@ -110,7 +113,15 @@ class Grid extends Sprite
 			} else {
 				targetY = Y + HEIGHT;
 			}
+			graphics.beginFill(0, 1);
 			graphics.drawRect(targetX - 0.5, targetY, 1, 4);
+			graphics.endFill();
+			
+			if(_showGrid) {
+				graphics.beginFill(0, 0.1);
+				graphics.drawRect(targetX - 0.5, Y, 1, HEIGHT);
+				graphics.endFill();
+			}
 			
 			if(xCurDel != 0 || !_lineAtZero){
 				var valueStringRaw:String = Std.string(xCurDel);
@@ -151,8 +162,15 @@ class Grid extends Sprite
 			}
 			//Math.min(xCurDel, xCurDel - xLowestDel) * xRatio +xZeroPos; 
 			var targetY:Float = yZeroPos - Math.min(yCurDel, yCurDel - yLowestDel) * yRatio;
+			graphics.beginFill(0, 1);
 			graphics.drawRect(targetX - 4, targetY-0.5, 4, 1);
+			graphics.endFill();
 			
+			if(_showGrid) {
+				graphics.beginFill(0, 0.1);
+				graphics.drawRect(X, targetY-0.5, WIDTH, 1);
+				graphics.endFill();
+			}
 			if(yCurDel != 0 || !_lineAtZero){
 				var valueStringRaw:String = Std.string(yCurDel);
 				var floatingPointIndex:Int = valueStringRaw.indexOf(".");
@@ -194,14 +212,28 @@ class Grid extends Sprite
 	
 	private function toGridPoint(p:Point):Point {
 		var x:Float, y:Float;
-		//if (_alwaysShowZero) {
-		if (_xBottom >= 0) {
-			x = X;				
-		} else if (_xTop <= 0) {
-			x = X + WIDTH;
+		if (_alwaysShowZero) {
+			if (_xBottom >= 0) {
+				x = X;
+			} else if (_xTop <= 0) {
+				x = X + WIDTH;
+			} else {
+				x = X - _xBottom * _ratio.x;
+			}
 		} else {
 			x = X - _xBottom * _ratio.x;
 		}
+		//if (_alwaysShowZero && _xBottom >= 0) {
+			//x = X;
+		//} else if (_alwaysShowZero && _xTop <= 0) {
+			//x = X + WIDTH;
+		//} else if (_xBottom >= 0) {
+			//x = X - _xBottom * _ratio.x;
+		//} else if (_xTop <= 0) {
+			//x = X - _xBottom * _ratio.x;
+		//} else {
+			//x = X - _xBottom * _ratio.x;
+		//}
 		
 		// Debugging:
 		//graphics.lineStyle(3, 0xee0000);
@@ -209,14 +241,27 @@ class Grid extends Sprite
 		//graphics.lineTo(x, Y + HEIGHT);
 		
 		x += p.x * _ratio.x;
-		
-		if (_yBottom >= 0) {
-			y = Y + HEIGHT;
-		} else if (_yTop <= 0) {
-			y = Y;
+		//if (_alwaysShowZero) {
+			//y = Y + HEIGHT;
+		//} else 
+		if (_alwaysShowZero) {
+			if (_yBottom >= 0) {
+				y = Y + HEIGHT;
+			} else if (_yTop <= 0) {
+				y = Y;
+			} else {
+				y = Y + HEIGHT + _yBottom * _ratio.y;
+			}
 		} else {
 			y = Y + HEIGHT + _yBottom * _ratio.y;
 		}
+		//if (_yBottom >= 0) {
+			//
+		//} else if (_yTop <= 0) {
+			//
+		//} else {
+			//
+		//}
 		
 		// Debugging:
 		//graphics.moveTo(X, y);
@@ -321,7 +366,7 @@ class Grid extends Sprite
 	private function set_lineAtZero(value:Bool):Bool 
 	{
 		_lineAtZero = value;
-		draw();
+		this.draw();
 		return _lineAtZero;
 	}
 	

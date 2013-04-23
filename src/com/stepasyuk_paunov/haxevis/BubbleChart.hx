@@ -1,48 +1,28 @@
 package com.stepasyuk_paunov.haxevis;
-import com.stepasyuk_paunov.haxevis.Grid;
+import com.stepasyuk_paunov.haxevis.DataSetItem;
 import nme.geom.Point;
-import nme.Lib;
 
 /**
  * ...
  * @author Yavor
  */
 
-class ScatterPlot extends Grid
+class BubbleChart extends ScatterPlot
 {
-	private var _showLegend:Bool;
-	private var _legend:Legend;
-	private var _data:DataSet;
 
 	public function new(data:DataSet) 
 	{
-		_data = data;
-		super(data.max(DataSetItem.X) + 10, data.min(DataSetItem.X) - 10, 10, data.max(DataSetItem.Y) + 10, data.min(DataSetItem.Y) - 10, 10);
-		draw();
+		super(data);
 	}
 	
-	override private function draw():Void {
-		super.draw();
-		drawSet(_data);
-	}
-	
-	private function drawSet(data:DataSet):Void {
-		for (item in data.items) 
-		{
-			if (Std.is(item, DataSet)) {
-				drawSet(cast(item, DataSet));
-				continue;
-			}
-			drawSetItem(item);
-		}
-	}
-	
-	private function drawSetItem(item:DataSetItem):Void {
-		graphics.beginFill(item.color);
+	override private function drawSetItem(item:DataSetItem):Void 
+	{
+		graphics.beginFill(item.color, 0.5);
 		var point:Point = new Point(item.x, item.y);
+		//var size:Float = item.z * _ratio.;
 		point = toGridPoint(point);
-		graphics.lineStyle(0.5);
-		graphics.drawRect(point.x-2.5, point.y-2.5, 5,5);
+		//graphics.lineStyle(0.5);
+		graphics.drawCircle(point.x, point.y, item.z);
 	}
 	
 	override private function set_xTop(value:Float):Float 
@@ -101,5 +81,4 @@ class ScatterPlot extends Grid
 		draw();
 		return _alwaysShowZero;
 	}
-		
 }
