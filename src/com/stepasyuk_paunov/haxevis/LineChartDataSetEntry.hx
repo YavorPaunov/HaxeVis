@@ -16,9 +16,7 @@ class LineChartDataSetEntry extends DataSetEntry
 	public function new(name:String, valueSet:Array<Float>, color:Int, ?value:Float) 
 	{
 		super(name, value, color);
-
 		_valueSet = valueSet;
-
 	}
 	
 	private function get_valueSet():Array<Float>

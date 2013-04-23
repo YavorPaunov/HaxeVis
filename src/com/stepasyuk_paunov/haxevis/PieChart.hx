@@ -30,13 +30,13 @@ class PieChart extends Sprite
 		cacheAsBitmap = true;
 		#end
 		
-		var ratios:Array<Float> = _data.getRatios();
+		var ratios:Array<Float> = _data.getRatios(DataSetItem.X);
 		var degrees:Float = 0;
 		
 		for (i in 0...ratios.length) 
 		{
 			var ratio:Float = ratios[i];
-			var entry:DataSetEntry = _data.entries[i];
+			var entry:DataSetItem = _data.items[i];
 			drawWedge(80, degrees, degrees + ratio * 360, entry.color);
 			degrees += ratio * 360;
 		}

@@ -1,7 +1,7 @@
 package com.stepasyuk_paunov.haxevis;
 import nme.display.Sprite;
 import nme.Lib;
-import native.display.DisplayObject;
+import nme.display.DisplayObject;
 import nme.text.TextField;
 import nme.text.TextFormat;
 

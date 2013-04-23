@@ -17,7 +17,7 @@ class Colors
 	//public static inline ORANGE:Int = 0xFCA88B;
 	//public static inline YELLOW:Int = 0xF0F592;
 		
-	public inline static function random():Int {
+	public static function random():Int {
 		return Std.int(0x999999 + 0x666666 * Math.random());
 	}
 }

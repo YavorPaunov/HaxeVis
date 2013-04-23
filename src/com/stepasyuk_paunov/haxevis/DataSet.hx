@@ -1,48 +1,178 @@
 package com.stepasyuk_paunov.haxevis;
+import haxe.remoting.FlashJsConnection;
+import nme.Lib;
 
 /**
  * ...
  * @author Yavor
  */
 
-class DataSet
+class DataSet extends DataSetItem
 {
 	
-	private var _entries:Array<DataSetEntry>;
+	private var _items:Array<DataSetItem>;
 	
-    public function new(? entries:Array<DataSetEntry>) {
-		if (entries != null) {
-			_entries = entries;
+    public function new(? items:Array<DataSetItem>) {
+		super();
+		if (items != null) {
+			_items = items;
 		} else {
-			_entries = new Array();
+			_items = new Array();
 		}
-
     }
 	
-	public function getSum():Float {
+	public function sum(field:String):Float {
 		var sum:Float = 0;
-		for (entry in _entries) 
+		for (item in _items) 
 		{
-			sum += entry.value;
+			sum += cast(Reflect.getProperty(item, field), Float);
 		}
 		return sum;
 	}
 	
-	public function getRatios():Array<Float> {
-		var ratios:Array<Float> = new Array();
-		var sum:Float = getSum();
-		for (entry in _entries) 
+	public function avg(field:String):Float {
+		return sum(field) / items.length;
+	}
+	
+	public function min(field:String):Float {
+		var min:Float = Math.POSITIVE_INFINITY;
+		for (item in _items) 
 		{
-			ratios.push(entry.value / sum);
+			min = Math.min(cast(Reflect.getProperty(item, field), Float), min);
+		}
+		return min;
+	}
+	
+	public function max(field:String):Float {
+		var max:Float = Math.NEGATIVE_INFINITY;
+		for (item in _items) 
+		{
+			max = Math.max(cast(Reflect.getProperty(item, field), Float), max);
+		}
+		return max;
+	}
+	
+	public function setInterval(field:String, interval:Float, ?min:Float):Void {
+		var current:Float;
+		if (min == null) {
+			current = interval;
+		} else {
+			current = min;
+		}
+		for (item in _items) 
+		{
+			Reflect.setProperty(item, field, current);
+			current += interval;
+		}
+	}
+	
+	public function getRatios(field:String):Array<Float> {
+		var ratios:Array<Float> = new Array();
+		var sum:Float = sum(field);
+		for (item in _items) 
+		{
+			
+			var value:Float = cast(Reflect.getProperty(item, field), Float);
+			Lib.trace(item.x);
+			ratios.push(value / sum);
 		}
 		return ratios;
 	}
 	
-	private function get_entries():Array<DataSetEntry> 
+	override public function flip(field1:String, field2:String):Void 
 	{
-		return _entries;
+		for (item in _items) 
+		{
+			item.flip(field1, field2);
+		}
 	}
-
-	public var entries(get_entries, null):Array<DataSetEntry>;
-
+	
+	
+	// Getters and setters:
+	private function get_items():Array<DataSetItem> 
+	{
+		return _items;
+	}
+	
+	private function set_items(value:Array<DataSetItem>):Array<DataSetItem> 
+	{
+		return _items = value;
+	}
+	
+	public var items(get_items, set_items):Array<DataSetItem>;
+	
+	override private function set_color(value:Int):Int {
+		for (item in _items) 
+		{
+			item.color = value;
+		}
+		return value;
+	}
+	
+	override private function get_color():Int {
+		if (items.length > 0) {
+			return items[0].color;
+		}
+		return -1;
+	}
+	
+	override private function get_name():String 
+	{
+		if (items.length > 0) {
+			return items[0].name;
+		}
+		return null;
+	}
+	
+	override private function set_name(value:String):String 
+	{
+		for (item in _items) 
+		{
+			item.name = value;
+		}
+		return value;
+	}
+	
+	override private function get_x():Float 
+	{
+		return avg(DataSetItem.X);
+	}
+	
+	override private function set_x(value:Float):Float 
+	{
+		for (item in _items) 
+		{
+			item.x = value;
+		}
+		return value;
+	}
+	
+	override private function get_y():Float 
+	{
+		return avg(DataSetItem.Y);
+	}
+	
+	override private function set_y(value:Float):Float 
+	{
+		for (item in _items) 
+		{
+			item.y = value;
+		}
+		return value;
+	}
+	
+	override private function get_z():Float 
+	{
+		return avg(DataSetItem.Z);
+	}
+	
+	override private function set_z(value:Float):Float 
+	{
+		for (item in _items) 
+		{
+			item.z = value;
+		}
+		return value;
+	}
+	
 }
