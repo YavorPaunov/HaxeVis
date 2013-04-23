@@ -16,11 +16,11 @@ class Grid extends Sprite
 	
 	// Height is 160
 	// Width is 160
-	private static inline var HEIGHT:Float = 150;
-	private static inline var WIDTH:Float = 210;
+	private static inline var HEIGHT:Float = 600;
+	private static inline var WIDTH:Float = 1000;
 	
-	private static inline var X:Float = 10;
-	private static inline var Y:Float = 10;
+	private static inline var X:Float = 100;
+	private static inline var Y:Float = 100;
 	
 	// In:
 	private var _xTop:Float;
@@ -153,7 +153,8 @@ class Grid extends Sprite
 		graphics.lineTo(_xZeroPos, Y + HEIGHT);
 		
 		graphics.moveTo(X,_yZeroPos);
-		graphics.lineTo(X + WIDTH,_yZeroPos);		
+		graphics.lineTo(X + WIDTH,_yZeroPos);
+		
 	}
 	
 	private function toGridPoint(p:Point):Point {
