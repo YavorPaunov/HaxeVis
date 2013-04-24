@@ -12,7 +12,7 @@ class DataSet extends DataSetItem
 	
 	private var _items:Array<DataSetItem>;
 	
-    public function new(? items:Array<DataSetItem>) {
+    public function new(?items:Array<DataSetItem>) {
 		super();
 		if (items != null) {
 			_items = items;
@@ -38,7 +38,12 @@ class DataSet extends DataSetItem
 		var min:Float = Math.POSITIVE_INFINITY;
 		for (item in _items) 
 		{
-			min = Math.min(cast(Reflect.getProperty(item, field), Float), min);
+			if (Std.is(item, DataSet)) {
+				var set:DataSet = cast(item, DataSet);
+				min = Math.min(set.min(field), min);
+			} else {
+				min = Math.min(cast(Reflect.getProperty(item, field), Float), min);
+			}
 		}
 		return min;
 	}
@@ -47,7 +52,12 @@ class DataSet extends DataSetItem
 		var max:Float = Math.NEGATIVE_INFINITY;
 		for (item in _items) 
 		{
-			max = Math.max(cast(Reflect.getProperty(item, field), Float), max);
+			if (Std.is(item, DataSet)) {
+				var set:DataSet = cast(item, DataSet);
+				max = Math.max(set.max(field), max);
+			} else {
+				max = Math.max(cast(Reflect.getProperty(item, field), Float), max);
+			}
 		}
 		return max;
 	}
@@ -56,7 +66,7 @@ class DataSet extends DataSetItem
 		var current:Float;
 		if (min == null) {
 			current = interval;
-		} else {
+		} else { 
 			current = min;
 		}
 		for (item in _items) 
@@ -71,9 +81,7 @@ class DataSet extends DataSetItem
 		var sum:Float = sum(field);
 		for (item in _items) 
 		{
-			
 			var value:Float = cast(Reflect.getProperty(item, field), Float);
-			Lib.trace(item.x);
 			ratios.push(value / sum);
 		}
 		return ratios;
