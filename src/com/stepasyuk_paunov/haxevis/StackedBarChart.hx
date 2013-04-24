@@ -2,13 +2,18 @@ package com.stepasyuk_paunov.haxevis;
 import nme.display.Sprite;
 import nme.display.CapsStyle;
 import nme.Lib;
+import nme.display.DisplayObject;
+import nme.text.TextField;
+import nme.text.TextFormat;
 
-class BarChart extends Sprite {
+
+class StackedBarChart extends Sprite {
 
 	private var _showLegend:Bool;
 	private var _legend:Legend;
 	private var _data:DataSet;
 	private var _vertical:Bool;
+	private var _step:Int;
 	
 	
 	
@@ -18,24 +23,34 @@ class BarChart extends Sprite {
 		_data = data;
 		_showLegend = false;
 		_vertical = vertical;
+		_step = 30;
 
 		if (vertical){
-			drawVerticalBarChart(_data);	
+			
+			for (i in _data.items){
+				drawVerticalStackedBarChart(cast(i,DataSet), _step);
+				_step+=30;
+			}
+			//drawVerticalBarChart(_data);	
 		} else {
-			drawHorizontalBarChart(_data);
+			for (i in _data.items){
+				drawHorizontalStackedBarChart(cast(i,DataSet), _step);
+				_step+=30;
+			}
+	
 		}
 		
 
 	}
 
-	public function drawVerticalBarChart(bars:DataSet){
+	public function drawVerticalStackedBarChart(bars:DataSet, startingX:Int){
 		
 		var step = 70;
 		var stage = Lib.current.stage;
 
 		var barChartSprite = new Sprite();
 
-		barChartSprite.x = 30;
+		barChartSprite.x = startingX;
 		barChartSprite.y = stage.stageHeight - 30;
 		barChartSprite.graphics.moveTo(barChartSprite.x, barChartSprite.y);
 		addChild(barChartSprite);
@@ -44,17 +59,17 @@ class BarChart extends Sprite {
 			while (i < bars.items.length){
 
 				barChartSprite.graphics.lineStyle(30,bars.items[i].color,CapsStyle.SQUARE);
-				barChartSprite.graphics.moveTo(barChartSprite.x, stage.stageHeight - 30); 
-				barChartSprite.graphics.lineTo(barChartSprite.x, -(bars.items[i].y));
-				barChartSprite.x = barChartSprite.x + step;
+				barChartSprite.graphics.moveTo(barChartSprite.x, barChartSprite.y - 30); 
+				barChartSprite.graphics.lineTo(barChartSprite.x, barChartSprite.y -bars.items[i].y);
+				barChartSprite.y = barChartSprite.y - bars.items[i].y;
 				i++;
 
 			}
 
-		barChartSprite.x = 10;
+		barChartSprite.y = 10 + 30;
 	}
 
-	public function drawHorizontalBarChart(bars:DataSet){
+	public function drawHorizontalStackedBarChart(bars:DataSet, startingY:Float){
 		
 		var step = 70;
 		var stage = Lib.current.stage;
@@ -62,7 +77,7 @@ class BarChart extends Sprite {
 		var barChartSprite = new Sprite();
 
 		barChartSprite.x = 10;
-		barChartSprite.y = 30;
+		barChartSprite.y = startingY;
 		barChartSprite.graphics.moveTo(barChartSprite.x, barChartSprite.y);
 		addChild(barChartSprite);
 
@@ -70,14 +85,15 @@ class BarChart extends Sprite {
 			while (i < bars.items.length){
 
 				barChartSprite.graphics.lineStyle(30,bars.items[i].color,CapsStyle.SQUARE);
-				barChartSprite.graphics.moveTo(barChartSprite.x, barChartSprite.y); 
-				barChartSprite.graphics.lineTo(bars.items[i].y, barChartSprite.y);
-				barChartSprite.y = barChartSprite.y + step;
+				barChartSprite.graphics.moveTo(barChartSprite.x + 30, barChartSprite.y); 
+				barChartSprite.graphics.lineTo(barChartSprite.x + bars.items[i].y, barChartSprite.y);
+				barChartSprite.x = barChartSprite.x + bars.items[i].y;
 				i++;
 
 			}
 
-		barChartSprite.y = 10;
+		barChartSprite.x = 10 - 30;
+
 	}
 
 	private function get_showLegend():Bool 

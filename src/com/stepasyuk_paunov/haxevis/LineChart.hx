@@ -19,15 +19,15 @@ class LineChart extends Sprite {
 		_data = data;
 		_showLegend = false;
 
-		for (i in _data.entries){
-
-		drawLineChart(cast(i,LineChartDataSetEntry).valueSet, i.color);
+		for (i in data.items){
+	//	drawLineChart(data);
+		drawLineChart(cast(i,DataSet));
 
 		}
 
 	}
 
-	public function drawLineChart(values:Array<Float>, color:Int){
+	public function drawLineChart(data:DataSet){
 		
 		var step = 100;
 		var stage = Lib.current.stage;
@@ -36,27 +36,27 @@ class LineChart extends Sprite {
 
 		lineChartSprite.x = 10;
 		lineChartSprite.y = stage.stageHeight - 10;
-		lineChartSprite.graphics.lineStyle(2,color);
-		lineChartSprite.graphics.moveTo(lineChartSprite.x, -(values[0]));
+		
+		lineChartSprite.graphics.moveTo(lineChartSprite.x, -(data.items[0].y));
 		addChild(lineChartSprite);
 
 			var i = 1;
-			while (i < values.length){
-
-				lineChartSprite.graphics.lineTo(lineChartSprite.x + step, -(values[i]));
+			while (i < data.items.length){
+				lineChartSprite.graphics.lineStyle(2,data.items[i].color);
+				lineChartSprite.graphics.lineTo(lineChartSprite.x + step, -(data.items[i].y));
 				lineChartSprite.x = lineChartSprite.x + step;
 				i++;
 
 			}
 
 		lineChartSprite.x = 10;
-		lineChartSprite.graphics.lineStyle(2,color);
+		//lineChartSprite.graphics.lineStyle(2,color);
 
 			var i = 1;
-			while (i < values.length){
-
+			while (i < data.items.length){
+				lineChartSprite.graphics.lineStyle(2,data.items[i].color);
 				lineChartSprite.graphics.beginFill(0xffffff);
-				lineChartSprite.graphics.drawCircle(lineChartSprite.x + step, -(values[i]),4);
+				lineChartSprite.graphics.drawCircle(lineChartSprite.x + step, -(data.items[i].y),4);
 				lineChartSprite.graphics.endFill();
 				lineChartSprite.x = lineChartSprite.x + step;
 				i++;
