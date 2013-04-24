@@ -40,6 +40,7 @@ class ScatterPlot extends Grid
 	private function drawSetItem(item:DataSetItem):Void {
 		graphics.beginFill(item.color);
 		var point:Point = new Point(item.x, item.y);
+		
 		point = toGridPoint(point);
 		graphics.lineStyle(0.5);
 		graphics.drawRect(point.x-2.5, point.y-2.5, 5,5);

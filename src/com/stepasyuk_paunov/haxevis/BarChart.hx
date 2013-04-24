@@ -38,39 +38,17 @@ class BarChart extends Grid {
 
 
 	public function drawVerticalBarChart(bars:DataSet){
-		
-		var step = 70;
-
-		// barChartSprite.x = 30;
-		// barChartSprite.y = stage.stageHeight - 30;
-		// barChartSprite.graphics.moveTo(barChartSprite.x, barChartSprite.y);
-		// addChild(barChartSprite);
-
-			var i = 0;
-
-			var prevX:Float=10;
-
+		for (i in 0...bars.items.length) {
+			var item:DataSetItem = bars.items[i];
+			var pos:Point = toGridPoint(new Point(item.x, item.y));
+			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
 			
-			while (i < bars.items.length){
-
-				var pointLinePos = new Point(prevX, 0);
-				pointLinePos= toGridPoint(pointLinePos);
-				graphics.moveTo(pointLinePos.x, pointLinePos.y);
-
-				var pointTo:Point = new Point(prevX, bars.items[i].y);
-				pointTo = toGridPoint(pointTo);
-
-				graphics.lineStyle(1,0x1a1a1a);
-				graphics.beginFill(bars.items[i].color);
-//				barChartSprite.graphics.moveTo(barChartSprite.x, barChartSprite.y); 
-				graphics.drawRect(pointLinePos.x, pointLinePos.y, 30, pointTo.y);
-				graphics.endFill();
-				prevX = prevX + 30;
-				i++;
-
-			}
-
-		//barChartSprite.x = 10;
+			var height:Float = bottom.y - bottom.y;
+			
+			graphics.beginFill(item.color);
+			graphics.drawRect(pos.x, pos.y, 5, height);
+			graphics.endFill();
+		}
 	}
 
 	public function drawHorizontalBarChart(bars:DataSet){

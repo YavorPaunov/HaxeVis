@@ -43,8 +43,8 @@ class Grid extends Sprite
 		super();
 		
 		cacheAsBitmap = true;
-		_lineAtZero = true;
-		_alwaysShowZero = true;
+		_lineAtZero = false;
+		_alwaysShowZero = false;
 		_showGrid = true;
 		
 		_xTop = xTop;
