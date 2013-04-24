@@ -20,7 +20,6 @@ class Grid extends Sprite
 	private static inline var HEIGHT:Float = 300;
 	private static inline var WIDTH:Float = 300;
 
-	
 	private static inline var X:Float = 100;
 	private static inline var Y:Float = 100;
 	
@@ -42,25 +41,29 @@ class Grid extends Sprite
 	public function new(xTop:Float, xBottom:Float, xDel:Float, yTop:Float, yBottom:Float, yDel:Float) 
 	{
 		super();
+		
 		cacheAsBitmap = true;
 		_lineAtZero = true;
 		_alwaysShowZero = true;
 		_showGrid = true;
 		
-		if (xTop <= _xBottom) {
-			throw new Error("Top must be higher than bottom.");
-		}
-		
-		if (_yTop <= _yBottom) {
-			throw new Error("Top must be higher than bottom.");			
-		}
-		
 		_xTop = xTop;
 		_xBottom = xBottom;
-		_xDel = xDel; 
+		_xDel = xDel;
+		
 		_yTop = yTop;
 		_yBottom = yBottom;
 		_yDel = yDel;
+		
+		if (_xTop <= _xBottom) {
+			throw new Error("Top x must be higher than bottom x.");
+		}
+		
+		
+		if (_yTop <= _yBottom) {
+			throw new Error("Top y must be higher than bottom y.");			
+		}
+		
 		
 		draw();
 	}
@@ -98,7 +101,7 @@ class Grid extends Sprite
 		}
 		
 		
-		graphics.beginFill(0, 1);
+		//graphics.beginFill(0, 1);
 		var xLowestDel:Float = _xBottom - _xBottom % _xDel;
 		var xHighestDel:Float = _xTop - _xTop % _xDel;
 		if (_alwaysShowZero) {
@@ -108,13 +111,16 @@ class Grid extends Sprite
 		var xCurDel:Float = xLowestDel;
 		while (xCurDel <= xHighestDel) {
 			// xCurDel or (xCurDel - xLowestDel)
+			
 			var targetX:Float = Math.min(xCurDel, xCurDel - xLowestDel) * xRatio +xZeroPos; 
 			var targetY:Float;
+			
 			if (_lineAtZero) {
 				targetY = yZeroPos;
 			} else {
 				targetY = Y + HEIGHT;
 			}
+			
 			graphics.beginFill(0, 1);
 			graphics.drawRect(targetX - 0.5, targetY, 1, 4);
 			graphics.endFill();

@@ -1,4 +1,5 @@
 package com.stepasyuk_paunov.haxevis;
+import haxe.Log;
 import nme.display.Sprite;
 import nme.Lib;
 
@@ -24,7 +25,12 @@ class PieChart extends Sprite
 		super();
 		_data = data;
 		_showLegend = false;
-		
+		for (item in _data.items) 
+		{
+			if (item.x < 0) {
+				Log.trace("Warning: Value of each item in PieChart must be negative.");
+			}
+		}
 		#if cpp
 		// necessary for antialias
 		cacheAsBitmap = true;

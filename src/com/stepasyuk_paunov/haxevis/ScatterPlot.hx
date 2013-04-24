@@ -101,5 +101,17 @@ class ScatterPlot extends Grid
 		draw();
 		return _alwaysShowZero;
 	}
+	
+	private function get_showLegend():Bool 
+	{
+		return _showLegend;
+	}
+	
+	private function set_showLegend(value:Bool):Bool 
+	{
+		return _showLegend = value;
+	}
+	
+	public var showLegend(get_showLegend, set_showLegend):Bool;
 		
 }
