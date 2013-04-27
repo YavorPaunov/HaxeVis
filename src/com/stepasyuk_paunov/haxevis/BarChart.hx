@@ -12,6 +12,12 @@ class BarChart extends Grid {
 	private var _vertical:Bool;
 	
 	
+
+
+
+
+
+	
 	
 	public function new (data:DataSet, vertical:Bool) {
 
@@ -19,6 +25,7 @@ class BarChart extends Grid {
 		_showLegend = false;
 		_vertical = vertical;
 
+		/*GOTTA FIX THIS! GOTTA SWAP X AND Y IF DRAWING HORIZONTALLY*/
 		super(data.max(DataSetItem.X) + 10, data.min(DataSetItem.X) - 10, 10, data.max(DataSetItem.Y) + 10, data.min(DataSetItem.Y) - 10, 10);
 		
 		
@@ -38,32 +45,37 @@ class BarChart extends Grid {
 
 
 	public function drawVerticalBarChart(bars:DataSet){
+		var prevX:Float = 7.5;
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
-			var pos:Point = toGridPoint(new Point(item.x, item.y));
+			var pos:Point = toGridPoint(new Point(prevX, item.y)); 
 			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
 			
-			var height:Float = bottom.y - bottom.y;
-			
+			var height:Float = pos.y - bottom.y; //used to be bottom.y - bottom.y which led to height being 0
+			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
-			graphics.drawRect(pos.x, pos.y, 5, height);
+			graphics.drawRect(pos.x, bottom.y, xDel*2, height); // 
 			graphics.endFill();
+
+			prevX +=7.5;
 		}
 	}
 
 	public function drawHorizontalBarChart(bars:DataSet){
 		
-		var step = 70;
-		
-			var i = 0;
-			while (i < bars.items.length){
+		var prevY:Float = 7.5;
+		for (i in 0...bars.items.length) {
+			var item:DataSetItem = bars.items[i];
+			var pos:Point = toGridPoint(new Point(item.y, prevY)); 
+			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
+			
+			var height:Float = pos.x - bottom.x; //used to be bottom.y - bottom.y which led to height being 0
+			graphics.lineStyle(1,0x1a1a1a);
+			graphics.beginFill(item.color);
+			graphics.drawRect(bottom.x, pos.y, height, yDel*2);
+			graphics.endFill();
 
-				// graphics.lineStyle(30,bars.items[i].color,CapsStyle.SQUARE);
-				// graphics.moveTo(barChartSprite.x, barChartSprite.y); 
-				// graphics.lineTo(bars.items[i].y, barChartSprite.y);
-				//y = barChartSprite.y + step;
-				i++;
-
+			prevY +=7.5;
 			}
 
 //		barChartSprite.y = 10;

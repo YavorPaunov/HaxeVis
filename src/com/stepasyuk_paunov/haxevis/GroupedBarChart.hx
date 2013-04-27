@@ -9,13 +9,13 @@ import nme.text.TextFormat;
 import com.stepasyuk_paunov.haxevis.Grid;
 
 
-class StackedBarChart extends Grid {
+class GroupedBarChart extends Grid {
 
 	private var _showLegend:Bool;
 	private var _legend:Legend;
 	private var _data:DataSet;
 	private var _vertical:Bool;
-	private var _step:Int;
+	private var _step:Float;
 	
 	
 	
@@ -38,13 +38,13 @@ class StackedBarChart extends Grid {
 		if (_vertical){
 			
 			for (i in _data.items){
-				drawVerticalStackedBarChart(cast(i,DataSet), _step);
-				_step+=10;
+				drawVerticalGroupedBarChart(cast(i,DataSet), _step);
+				_step += xDel * 2 * (_data.items.length - 1);
 			}
 			//drawVerticalBarChart(_data);	
 		} else {
 			for (i in _data.items){
-				drawHorizontalStackedBarChart(cast(i,DataSet), _step);
+				drawHorizontalGroupedBarChart(cast(i,DataSet), _step);
 				_step+=10;
 			}
 	
@@ -52,9 +52,9 @@ class StackedBarChart extends Grid {
 
 	}
 
-	public function drawVerticalStackedBarChart(bars:DataSet, startingX:Int){
+	public function drawVerticalGroupedBarChart(bars:DataSet, startingX:Float){
 		
-		var prevY:Float = 0;
+		var prevX:Float = 0;
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
 			var pos:Point = toGridPoint(new Point(startingX, item.y)); 
@@ -63,18 +63,16 @@ class StackedBarChart extends Grid {
 			var height:Float = pos.y - bottom.y; //used to be bottom.y - bottom.y which led to height being 0
 			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
-			graphics.drawRect(pos.x, bottom.y + prevY, xDel*2, height); // 
+			graphics.drawRect(pos.x+prevX, bottom.y, 20, height); // 
 			graphics.endFill();
 
-			prevY +=height;
-			}
-
-//		barChartSprite.y = 10 + 30;
+			prevX += prevX+20;
+		}
 	}
 
-	public function drawHorizontalStackedBarChart(bars:DataSet, startingY:Float){
+	public function drawHorizontalGroupedBarChart(bars:DataSet, startingY:Float){
 		
-		var prevX:Float = 0;
+		var prevY:Float = 0;
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
 			var pos:Point = toGridPoint(new Point(item.y, startingY)); 
@@ -83,11 +81,10 @@ class StackedBarChart extends Grid {
 			var width:Float = pos.x - bottom.x; //used to be bottom.y - bottom.y which led to height being 0
 			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
-			//graphics.drawRect(pos.x, bottom.y + prevY, xDel*2, height);
-			graphics.drawRect(bottom.x + prevX, pos.y, width, yDel*2);
+			graphics.drawRect(bottom.x, pos.y+prevY, width, 20);
 			graphics.endFill();
 
-			prevX +=width;
+			prevY += prevY + 20;
 		}
 
 	}
