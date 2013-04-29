@@ -11,25 +11,34 @@ class BarChart extends Grid {
 	private var _data:DataSet;
 	private var _vertical:Bool;
 	
-	
-
-
-
-
-
-	
-	
-	public function new (data:DataSet, vertical:Bool) {
+	public function new (data:DataSet, vertical:Bool=true, minInd:Float=1, intervalInd:Float=1) {
 
 		_data = data;
 		_showLegend = false;
 		_vertical = vertical;
-
+		_lineAtZero = true;
+		_alwaysShowZero = true;
+		
+		var gridMin:Point;
+		var gridMax:Point;
+		var interval:Point;
+		
+		if (_vertical) {
+			_data.setInterval(DataSetItem.X, intervalInd, minInd);
+			gridMin = new Point(data.min(DataSetItem.X) - intervalInd, data.min(DataSetItem.Y));
+			gridMax = new Point(data.max(DataSetItem.X) + intervalInd, data.max(DataSetItem.Y));
+			interval = new Point(intervalInd,  (gridMax.y - gridMin.y) / 5);
+		} else {
+			_data.setInterval(DataSetItem.Y, intervalInd, minInd);
+			gridMin = new Point(data.min(DataSetItem.X), data.min(DataSetItem.Y) - intervalInd);
+			gridMax = new Point(data.max(DataSetItem.X) , data.max(DataSetItem.Y) + intervalInd);
+			interval = new Point((gridMax.x - gridMin.x) / 5,  intervalInd);
+		}
+		
 		/*GOTTA FIX THIS! GOTTA SWAP X AND Y IF DRAWING HORIZONTALLY*/
-		super(data.max(DataSetItem.X) + 10, data.min(DataSetItem.X) - 10, 10, data.max(DataSetItem.Y) + 10, data.min(DataSetItem.Y) - 10, 10);
 		
 		
-
+		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);
 	}
 
 	override private function draw():Void {
@@ -45,43 +54,41 @@ class BarChart extends Grid {
 
 
 	public function drawVerticalBarChart(bars:DataSet){
-		var prevX:Float = 7.5;
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
-			var pos:Point = toGridPoint(new Point(prevX, item.y)); 
-			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
+			var pos:Point = toGridPoint(new Point(item.x, item.y)); 
+			var bottom:Point = toGridPoint(new Point(Math.max(_xBottom,0), Math.max(_yBottom,0)));
 			
-			var height:Float = pos.y - bottom.y; //used to be bottom.y - bottom.y which led to height being 0
+			var height:Float = pos.y - bottom.y;
+			var width:Float = 5;
 			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
-			graphics.drawRect(pos.x, bottom.y, xDel*2, height); // 
+			graphics.drawRect(pos.x - width/2, bottom.y, width, height); 
 			graphics.endFill();
-
-			prevX +=7.5;
 		}
 	}
-
+	
 	public function drawHorizontalBarChart(bars:DataSet){
-		
-		var prevY:Float = 7.5;
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
-			var pos:Point = toGridPoint(new Point(item.y, prevY)); 
-			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
-			
-			var height:Float = pos.x - bottom.x; //used to be bottom.y - bottom.y which led to height being 0
+			var pos:Point = toGridPoint(new Point(item.x, item.y)); 
+			var bottom:Point;
+			if(_alwaysShowZero){
+				bottom = toGridPoint(new Point(0, 0));
+			} else {
+				bottom = toGridPoint(new Point(Math.max(_xBottom, 0), Math.max(_yBottom, 0)));
+			}
+			var height:Float = 5;
+			var width:Float = pos.x - bottom.x;
 			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
-			graphics.drawRect(bottom.x, pos.y, height, yDel*2);
+			graphics.drawRect(bottom.x, pos.y - height/2, width, height);
 			graphics.endFill();
+		}
 
-			prevY +=7.5;
-			}
-
-//		barChartSprite.y = 10;
 	}
 
-override private function set_xTop(value:Float):Float 
+	override private function set_xTop(value:Float):Float 
 	{
 		_xTop = value;
 		draw();
