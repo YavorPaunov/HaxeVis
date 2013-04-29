@@ -12,6 +12,10 @@ class DataSet extends DataSetItem
 	
 	private var _items:Array<DataSetItem>;
 	
+	/**
+	 * 
+	 * @param	?items
+	 */
     public function new(?items:Array<DataSetItem>) {
 		super();
 		if (items != null) {
@@ -21,6 +25,11 @@ class DataSet extends DataSetItem
 		}
     }
 	
+	/**
+	 * 
+	 * @param	field
+	 * @return
+	 */
 	public function sum(field:String):Float {
 		var sum:Float = 0;
 		for (item in _items) 
@@ -30,10 +39,20 @@ class DataSet extends DataSetItem
 		return sum;
 	}
 	
+	/**
+	 * 
+	 * @param	field
+	 * @return
+	 */
 	public function avg(field:String):Float {
 		return sum(field) / items.length;
 	}
 	
+	/**
+	 * 
+	 * @param	field
+	 * @return
+	 */
 	public function min(field:String):Float {
 		var min:Float = Math.POSITIVE_INFINITY;
 		for (item in _items) 
@@ -48,6 +67,11 @@ class DataSet extends DataSetItem
 		return min;
 	}
 	
+	/**
+	 * 
+	 * @param	field
+	 * @return
+	 */
 	public function max(field:String):Float {
 		var max:Float = Math.NEGATIVE_INFINITY;
 		for (item in _items) 
@@ -62,6 +86,12 @@ class DataSet extends DataSetItem
 		return max;
 	}
 	
+	/**
+	 * 
+	 * @param	field
+	 * @param	interval
+	 * @param	?min
+	 */
 	public function setInterval(field:String, interval:Float, ?min:Float):Void {
 		var current:Float;
 		if (min == null) {
@@ -76,6 +106,11 @@ class DataSet extends DataSetItem
 		}
 	}
 	
+	/**
+	 * 
+	 * @param	field
+	 * @return
+	 */
 	public function getRatios(field:String):Array<Float> {
 		var ratios:Array<Float> = new Array();
 		var sum:Float = sum(field);
@@ -87,6 +122,11 @@ class DataSet extends DataSetItem
 		return ratios;
 	}
 	
+	/**
+	 * 
+	 * @param	field1
+	 * @param	field2
+	 */
 	override public function flip(field1:String, field2:String):Void 
 	{
 		for (item in _items) 

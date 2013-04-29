@@ -11,6 +11,14 @@ class BarChart extends Grid {
 	private var _data:DataSet;
 	private var _vertical:Bool;
 	
+	/**
+	 * 
+	 * @param  data A DataSet containing data for the 
+	 * @param vertical A Bool value that specifies whether the bars are to be drawn vertically. If false, they will be drawn horizontally.
+	 * @param  minInd The lowest value of the independent variable (x if vertical is true, y if vertical is false)
+	 * @param  intervalInd The interval between the values of the independent variable
+	 * @return a LineChart object
+	 */
 	public function new (data:DataSet, vertical:Bool=true, minInd:Float=1, intervalInd:Float=1) {
 
 		_data = data;
@@ -35,59 +43,42 @@ class BarChart extends Grid {
 			interval = new Point((gridMax.x - gridMin.x) / 5,  intervalInd);
 		}
 		
-		/*GOTTA FIX THIS! GOTTA SWAP X AND Y IF DRAWING HORIZONTALLY*/
-		
-		
 		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);
 	}
 
 	override private function draw():Void {
 		super.draw();
 		
-		if (_vertical){
-			drawVerticalBarChart(_data);	
-		} else {
-			drawHorizontalBarChart(_data);
-		}
-	}
-
-
-
-	public function drawVerticalBarChart(bars:DataSet){
-		for (i in 0...bars.items.length) {
-			var item:DataSetItem = bars.items[i];
-			var pos:Point = toGridPoint(new Point(item.x, item.y)); 
-			var bottom:Point = toGridPoint(new Point(Math.max(_xBottom,0), Math.max(_yBottom,0)));
-			
-			var height:Float = pos.y - bottom.y;
-			var width:Float = 5;
-			graphics.lineStyle(1,0x1a1a1a);
-			graphics.beginFill(item.color);
-			graphics.drawRect(pos.x - width/2, bottom.y, width, height); 
-			graphics.endFill();
-		}
-	}
-	
-	public function drawHorizontalBarChart(bars:DataSet){
-		for (i in 0...bars.items.length) {
-			var item:DataSetItem = bars.items[i];
+		for (i in 0..._data.items.length) {
+			var item:DataSetItem = _data.items[i];
 			var pos:Point = toGridPoint(new Point(item.x, item.y)); 
 			var bottom:Point;
+			
 			if(_alwaysShowZero){
 				bottom = toGridPoint(new Point(0, 0));
 			} else {
 				bottom = toGridPoint(new Point(Math.max(_xBottom, 0), Math.max(_yBottom, 0)));
 			}
-			var height:Float = 5;
-			var width:Float = pos.x - bottom.x;
-			graphics.lineStyle(1,0x1a1a1a);
+			
+			graphics.lineStyle(1, 0x1a1a1a);
 			graphics.beginFill(item.color);
-			graphics.drawRect(bottom.x, pos.y - height/2, width, height);
+			
+			var height:Float;
+			var width:Float;
+			if (_vertical) {
+				height = pos.y - bottom.y;
+				width = 15;
+				graphics.drawRect(pos.x - width/2, bottom.y, width, height);
+			} else {
+				height = 15;
+				width = pos.x - bottom.x;
+				graphics.drawRect(bottom.x, pos.y - height / 2, width, height);
+			}
 			graphics.endFill();
-		}
-
+		}	
+		
 	}
-
+	
 	override private function set_xTop(value:Float):Float 
 	{
 		_xTop = value;

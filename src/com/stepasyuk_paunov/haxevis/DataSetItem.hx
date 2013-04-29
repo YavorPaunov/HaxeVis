@@ -10,14 +10,20 @@ class DataSetItem
 	public inline static var Y:String = "y";
 	public inline static var Z:String = "z";
 	
-	
 	private var _x:Float;
 	private var _y:Float;
 	private var _z:Float;
 	
 	private var _name:String;
 	private var _color:Int;
-	
+	/**
+	 * 
+	 * @param	x
+	 * @param	y
+	 * @param	z
+	 * @param	name
+	 * @param	color
+	 */
 	public function new(x:Float=0, y:Float=0, z:Float=0, name:String="", color:Int=-1) 
 	{
 		_name = name;
@@ -28,6 +34,11 @@ class DataSetItem
 		_z = z;
 	}
 	
+	/**
+	 * 
+	 * @param	field1
+	 * @param	field2
+	 */
 	public function flip(field1:String, field2:String):Void {
 		var newField1:Float = Reflect.getProperty(this, field2);
 		var newField2:Float = Reflect.getProperty(this, field1);

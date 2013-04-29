@@ -59,11 +59,9 @@ class Grid extends Sprite
 			throw new Error("Top x must be higher than bottom x.");
 		}
 		
-		
 		if (_yTop <= _yBottom) {
 			throw new Error("Top y must be higher than bottom y.");			
 		}
-		
 		
 		draw();
 	}

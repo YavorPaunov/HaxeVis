@@ -13,85 +13,40 @@ class LineChart extends Grid {
 	private var _data:DataSet;
 	
 	
-	
-	public function new (data:DataSet) {
-
+	/**
+	 * 
+	 * @param  data A DataSet containing data for the 
+	 * @param  minInd The lowest value of the independent variable (x in this case)
+	 * @param  intervalInd The interval between the values of the independent variable
+	 */
+	public function new (data:DataSet, minInd:Float=1, intervalInd:Float=1) {
 		_data = data;
-		_showLegend = false;
-		super(data.max(DataSetItem.X) + 10, data.min(DataSetItem.X) - 10, 10, data.max(DataSetItem.Y) + 10, data.min(DataSetItem.Y) - 10, 10);
 		
-		
-		
-
+		for (item in data.items) 
+		{
+			cast(item, DataSet).setInterval(DataSetItem.X, intervalInd, minInd);
 		}
-
-	
+		super(data.max(DataSetItem.X), data.min(DataSetItem.X), intervalInd, data.max(DataSetItem.Y), data.min(DataSetItem.Y), intervalInd);
+	}
 
 	override private function draw():Void {
 		super.draw();
-		for (i in _data.items){
-	//	drawLineChart(data);
-		drawLineChart(cast(i,DataSet));
-	}
-
-}
-	public function drawLineChart(data:DataSet){
-		
-		var step = 30;
-		//var stage = Lib.current.stage;
-
-		// var lineChartSprite = new Sprite();
-
-		// lineChartSprite.x = 10;
-		// lineChartSprite.y = stage.stageHeight - 10;
-		
-		// lineChartSprite.graphics.moveTo(lineChartSprite.x, -(data.items[0].y));
-		// addChild(lineChartSprite);
-			var prevX:Float=0;
-
-			var pointLinePos = new Point(prevX, data.items[0].y);
-				pointLinePos= toGridPoint(pointLinePos);
-				graphics.moveTo(pointLinePos.x, pointLinePos.y);
-
-			var i = 1;
-			while (i < data.items.length){
-
-				var pointTo:Point = new Point(prevX+step, data.items[i].y);
-				pointTo = toGridPoint(pointTo);
-				//graphics.moveTo(prevX, point.y);
-				graphics.lineStyle(2,data.items[i].color);
+		for (i in 0..._data.items.length) {
+			var subData:DataSet = cast(_data.items[i], DataSet);
+			var startPoint:Point = toGridPoint(new Point(subData.items[0].x, subData.items[0].y));
+			graphics.lineStyle(1, subData.color);
+			graphics.moveTo(startPoint.x, startPoint.y);
+			
+			for (item in subData.items){
+				var pointTo:Point = toGridPoint(new Point(item.x, item.y));
 				graphics.lineTo(pointTo.x, pointTo.y);
-				prevX = prevX + 30;
-				i++;
-
-			}
-
-		//lineChartSprite.x = 10;
-		//lineChartSprite.graphics.lineStyle(2,color);
-
-			prevX=0;
-			var pointDotPos = new Point(prevX, data.items[0].y);
-				pointDotPos= toGridPoint(pointDotPos);
-				graphics.moveTo(pointDotPos.x, pointDotPos.y);
-
-			var i = 1;
-			while (i < data.items.length){
-
-				var point:Point = new Point(prevX+step, data.items[i].y);
-				point = toGridPoint(point);
-				graphics.moveTo(point.x, point.y);
-				graphics.lineStyle(2,data.items[i].color);
 				graphics.beginFill(0xffffff);
-				graphics.drawCircle(point.x, point.y,4);
+				graphics.drawCircle(pointTo.x, pointTo.y, 3);
 				graphics.endFill();
-				prevX = prevX + 30;
-				i++;
-
 			}
-
-		// lineChartSprite.x = 10;
+		}
 	}
-
+	
 	override private function set_xTop(value:Float):Float 
 	{
 		_xTop = value;
