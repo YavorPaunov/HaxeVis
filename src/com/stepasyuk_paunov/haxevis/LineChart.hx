@@ -26,7 +26,12 @@ class LineChart extends Grid {
 		{
 			cast(item, DataSet).setInterval(DataSetItem.X, intervalInd, minInd);
 		}
-		super(data.max(DataSetItem.X), data.min(DataSetItem.X), intervalInd, data.max(DataSetItem.Y), data.min(DataSetItem.Y), intervalInd);
+		
+		var gridMin:Point = new Point(data.min(DataSetItem.X), data.min(DataSetItem.Y));
+		var gridMax:Point = new Point(data.max(DataSetItem.X), data.max(DataSetItem.Y));
+		var interval:Point = new Point(intervalInd,  (gridMax.y - gridMin.y) / 10);
+		
+		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);
 	}
 
 	override private function draw():Void {
@@ -36,10 +41,14 @@ class LineChart extends Grid {
 			var startPoint:Point = toGridPoint(new Point(subData.items[0].x, subData.items[0].y));
 			graphics.lineStyle(1, subData.color);
 			graphics.moveTo(startPoint.x, startPoint.y);
-			
+			var pointTo:Point;
 			for (item in subData.items){
-				var pointTo:Point = toGridPoint(new Point(item.x, item.y));
+				pointTo = toGridPoint(new Point(item.x, item.y));
 				graphics.lineTo(pointTo.x, pointTo.y);
+				
+			}
+			for (item in subData.items) {
+				pointTo = toGridPoint(new Point(item.x, item.y));
 				graphics.beginFill(0xffffff);
 				graphics.drawCircle(pointTo.x, pointTo.y, 3);
 				graphics.endFill();
