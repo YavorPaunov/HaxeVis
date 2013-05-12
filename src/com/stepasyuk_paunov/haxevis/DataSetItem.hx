@@ -4,12 +4,15 @@ package com.stepasyuk_paunov.haxevis;
  * @author Yavor
  */
 
+enum Axis {
+	x;
+	y;
+	z;
+}
+	
 class DataSetItem
 {
-	public inline static var X:String = "x";
-	public inline static var Y:String = "y";
-	public inline static var Z:String = "z";
-	
+		
 	private var _x:Float;
 	private var _y:Float;
 	private var _z:Float;
@@ -39,7 +42,27 @@ class DataSetItem
 	 * @param	field1
 	 * @param	field2
 	 */
-	public function flip(field1:String, field2:String):Void {
+	public function flip(axis1:Axis, axis2:Axis):Void {
+		var field1:String;
+		var field2:String;
+		switch(axis1) {
+			case Axis.x:
+				field1 = "x";
+			case Axis.y:
+				field1 = "y";
+			case Axis.z:
+				field1 = "z";				
+		}
+		
+		switch(axis2) {
+			case Axis.x:
+				field2 = "x";
+			case Axis.y:
+				field2 = "y";
+			case Axis.z:
+				field2 = "z";				
+		}
+		
 		var newField1:Float = Reflect.getProperty(this, field2);
 		var newField2:Float = Reflect.getProperty(this, field1);
 		

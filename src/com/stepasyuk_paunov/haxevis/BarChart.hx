@@ -3,6 +3,7 @@ import nme.display.Sprite;
 import nme.display.CapsStyle;
 import nme.Lib;
 import nme.geom.Point;
+import com.stepasyuk_paunov.haxevis.DataSetItem;
 
 class BarChart extends Grid {
 
@@ -32,14 +33,14 @@ class BarChart extends Grid {
 		var interval:Point;
 		
 		if (_vertical) {
-			_data.setInterval(DataSetItem.X, intervalInd, minInd);
-			gridMin = new Point(data.min(DataSetItem.X) - intervalInd, data.min(DataSetItem.Y));
-			gridMax = new Point(data.max(DataSetItem.X) + intervalInd, data.max(DataSetItem.Y));
+			_data.setInterval(Axis.x, intervalInd, minInd);
+			gridMin = new Point(data.min(Axis.x) - intervalInd, data.min(Axis.y));
+			gridMax = new Point(data.max(Axis.x) + intervalInd, data.max(Axis.y));
 			interval = new Point(intervalInd,  (gridMax.y - gridMin.y) / 5);
 		} else {
-			_data.setInterval(DataSetItem.Y, intervalInd, minInd);
-			gridMin = new Point(data.min(DataSetItem.X), data.min(DataSetItem.Y) - intervalInd);
-			gridMax = new Point(data.max(DataSetItem.X) , data.max(DataSetItem.Y) + intervalInd);
+			_data.setInterval(Axis.y, intervalInd, minInd);
+			gridMin = new Point(data.min(Axis.x), data.min(Axis.y) - intervalInd);
+			gridMax = new Point(data.max(Axis.x) , data.max(Axis.y) + intervalInd);
 			interval = new Point((gridMax.x - gridMin.x) / 5,  intervalInd);
 		}
 		

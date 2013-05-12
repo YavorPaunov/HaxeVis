@@ -2,6 +2,7 @@ package com.stepasyuk_paunov.haxevis;
 import haxe.Log;
 import nme.display.Sprite;
 import nme.Lib;
+import com.stepasyuk_paunov.haxevis.DataSetItem;
 
 /**
  * ...
@@ -40,7 +41,7 @@ class PieChart extends Sprite
 	}
 	
 	private function draw():Void {
-		var ratios:Array<Float> = _data.getRatios(DataSetItem.X);
+		var ratios:Array<Float> = _data.getRatios(Axis.x);
 		var degrees:Float = 0;
 		
 		for (i in 0...ratios.length) 

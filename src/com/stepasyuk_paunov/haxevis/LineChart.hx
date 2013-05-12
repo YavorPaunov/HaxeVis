@@ -5,6 +5,7 @@ import nme.display.DisplayObject;
 import nme.text.TextField;
 import nme.text.TextFormat;
 import nme.geom.Point;
+import com.stepasyuk_paunov.haxevis.DataSetItem;
 
 class LineChart extends Grid {
 
@@ -24,11 +25,11 @@ class LineChart extends Grid {
 		
 		for (item in data.items) 
 		{
-			cast(item, DataSet).setInterval(DataSetItem.X, intervalInd, minInd);
+			cast(item, DataSet).setInterval(Axis.x, intervalInd, minInd);
 		}
 		
-		var gridMin:Point = new Point(data.min(DataSetItem.X), data.min(DataSetItem.Y));
-		var gridMax:Point = new Point(data.max(DataSetItem.X), data.max(DataSetItem.Y));
+		var gridMin:Point = new Point(data.min(Axis.x), data.min(Axis.y));
+		var gridMax:Point = new Point(data.max(Axis.x), data.max(Axis.y));
 		var interval:Point = new Point(intervalInd,  (gridMax.y - gridMin.y) / 10);
 		
 		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);

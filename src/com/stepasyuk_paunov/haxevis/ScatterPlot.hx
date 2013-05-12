@@ -2,6 +2,7 @@ package com.stepasyuk_paunov.haxevis;
 import com.stepasyuk_paunov.haxevis.Grid;
 import nme.geom.Point;
 import nme.Lib;
+import com.stepasyuk_paunov.haxevis.DataSetItem;
 
 /**
  * ...
@@ -17,7 +18,7 @@ class ScatterPlot extends Grid
 	public function new(data:DataSet) 
 	{
 		_data = data;
-		super(data.max(DataSetItem.X) + 10, data.min(DataSetItem.X) - 10, 10, data.max(DataSetItem.Y) + 10, data.min(DataSetItem.Y) - 10, 10);
+		super(data.max(Axis.x) + 10, data.min(Axis.x) - 10, 10, data.max(Axis.y) + 10, data.min(Axis.y) - 10, 10);
 		draw();
 	}
 	
