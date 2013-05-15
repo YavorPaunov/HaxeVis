@@ -5,6 +5,7 @@ import nme.display.DisplayObject;
 import nme.text.TextField;
 import nme.text.TextFormat;
 import nme.geom.Point;
+import com.stepasyuk_paunov.haxevis.DataSetItem;
 
 class StackedLineChart extends Grid {
 
@@ -15,11 +16,11 @@ class StackedLineChart extends Grid {
 	
 	
 	
-	public function new (data:DataSet) {
+	public function new (data:DataSet, minInd:Float=1, intervalInd:Float=1) {
 
 		_data = data;
-		_showLegend = false;
 
+		if (_data.items.length > 1){
 		var lastLineIndex = _data.items.length-2;
 
 		while(lastLineIndex >= 0){
@@ -33,8 +34,23 @@ class StackedLineChart extends Grid {
 			lastLineIndex--;
 
 		}
-	super(data.max(DataSetItem.X) + 10, data.min(DataSetItem.X) - 10, 10, data.max(DataSetItem.Y) + 10, data.min(DataSetItem.Y) - 10, 10);
+
+		}
 		
+
+		//for (i in 0..._data.items.length-1){
+			var subData:DataSet = cast(_data.items[0],DataSet); 
+			for (item in _data.items) 
+			{
+				
+				cast(item, DataSet).setInterval(Axis.x, intervalInd, minInd);
+			}
+		//}
+		var gridMin:Point = new Point(_data.min(Axis.x), _data.min(Axis.y));
+		var gridMax:Point = new Point(_data.max(Axis.x), _data.max(Axis.y));
+		var interval:Point = new Point(intervalInd,  (gridMax.y - gridMin.y) / 10);
+		
+		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);
 		
 		
 
@@ -48,60 +64,76 @@ class StackedLineChart extends Grid {
 
 		//var i = _data.items.length-1;
 		for (i in 0..._data.items.length){
-			drawStackedLineChart(cast(_data.items[i],DataSet));
-
-
-	}
-}
-
-	public function drawStackedLineChart(data:DataSet){
-		
-		var step = 10;
-		
-			var prevX:Float=0;
-
-			var pointLinePos = new Point(prevX, data.items[0].y);
-				pointLinePos= toGridPoint(pointLinePos);
-				graphics.moveTo(pointLinePos.x, pointLinePos.y);
-				graphics.lineStyle(2,data.items[0].color);
-				graphics.beginFill(data.items[0].color);
-
-
-			var i = 1;
 			
-			while (i < data.items.length){
-
-				var pointTo:Point = new Point(prevX+step, data.items[i].y);
-				pointTo = toGridPoint(pointTo);
-				//graphics.moveTo(prevX, point.y);
-			
-				
+			var subData:DataSet = cast(_data.items[i], DataSet);
+			var startPoint:Point = toGridPoint(new Point(subData.items[0].x, subData.items[0].y));
+			graphics.lineStyle(2,subData.items[0].color);
+			graphics.beginFill(subData.items[0].color);
+			graphics.moveTo(startPoint.x, startPoint.y);
+			var pointTo:Point;
+			var pointCounter = 0;
+			for (item in subData.items){
+				pointTo = toGridPoint(new Point(item.x, item.y));
 				graphics.lineTo(pointTo.x, pointTo.y);
 
-				if (i == data.items.length - 1){
+			if (pointCounter == subData.items.length - 1){
 
 
 
-					var fillingPoint = toGridPoint(new Point(prevX+step, _yBottom));
+					var fillingPoint = toGridPoint(new Point(item.x, 0));
 					graphics.lineTo(fillingPoint.x, fillingPoint.y);
 
-					fillingPoint = toGridPoint(new Point(_xBottom, _yBottom));
+					fillingPoint = toGridPoint(new Point(subData.items[0].x, 0));
 					graphics.lineTo(fillingPoint.x, fillingPoint.y);
 
-					fillingPoint = toGridPoint(new Point(_xBottom, data.items[0].y));
+					fillingPoint = toGridPoint(new Point(subData.items[0].x, subData.items[0].y));
 					graphics.lineTo(fillingPoint.x, fillingPoint.y);
+				
+			}
+			pointCounter++;
+
+	}
+			graphics.endFill();
+}
+}
+
+	// public function drawStackedLineChart(data:DataSet){
+		
+	// 	var step = 10;
+		
+	// 		var prevX:Float=0;
+
+	// 		var subData:DataSet = cast(_data.items[i], DataSet);
+	// 		var startPoint:Point = toGridPoint(new Point(subData.items[0].x, subData.items[0].y));
+	// 			graphics.moveTo(startPoint.x, startPoint.y);
+	// 			graphics.lineStyle(2,data.items[0].color);
+	// 			graphics.beginFill(data.items[0].color);
+
+
+	// 		var i = 1;
+			
+	// 		while (i < data.items.length){
+
+	// 			var pointTo:Point = new Point(data.items[i].x, data.items[i].y);
+	// 			pointTo = toGridPoint(pointTo);
+	// 			//graphics.moveTo(prevX, point.y);
+			
+				
+	// 			graphics.lineTo(pointTo.x, pointTo.y);
+
+				
 				
 						
 
-				}
+	// 			}
 				
-				prevX = prevX + 10;
-				i++;
+	// 			prevX = prevX + 10;
+	// 			i++;
 
-			}
-			graphics.endFill();
+	// 		}
+	// 		//graphics.endFill();
 
-	}
+	
 
 	override private function set_xTop(value:Float):Float 
 	{

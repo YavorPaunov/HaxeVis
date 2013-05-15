@@ -7,6 +7,7 @@ import nme.display.DisplayObject;
 import nme.text.TextField;
 import nme.text.TextFormat;
 import com.stepasyuk_paunov.haxevis.Grid;
+import com.stepasyuk_paunov.haxevis.DataSetItem;
 
 
 class GroupedBarChart extends Grid {
@@ -16,17 +17,35 @@ class GroupedBarChart extends Grid {
 	private var _data:DataSet;
 	private var _vertical:Bool;
 	private var _step:Float;
+	private var _intervalInd:Float;
 	
 	
 	
-	public function new (data:DataSet, vertical:Bool) {
+	public function new (data:DataSet, vertical:Bool, minInd:Float=1, intervalInd:Float=1) {
 
 		_data = data;
 		_showLegend = false;
 		_vertical = vertical;
-		_step = 10;
+		_intervalInd = intervalInd;
 		
-		super(data.max(DataSetItem.X) + 10, data.min(DataSetItem.X) - 10, 10, data.max(DataSetItem.Y) + 10, data.min(DataSetItem.Y) - 10, 10);
+		
+		var gridMin:Point;
+		var gridMax:Point;
+		var interval:Point;
+		
+		if (_vertical) {
+			_data.setInterval(Axis.x, intervalInd, minInd);
+			gridMin = new Point(data.min(Axis.x) - intervalInd, data.min(Axis.y));
+			gridMax = new Point(cast(_data.items[0],DataSet).items.length * _data.items.length, data.max(Axis.y));
+			interval = new Point(intervalInd,  (gridMax.y - gridMin.y) / 5);
+		} else {
+			_data.setInterval(Axis.y, intervalInd, minInd);
+			gridMin = new Point(data.min(Axis.x), data.min(Axis.y) - intervalInd);
+			gridMax = new Point(cast(_data.items[0],DataSet).max(Axis.y), cast(_data.items[0],DataSet).items.length * _data.items.length);
+			interval = new Point((gridMax.x - gridMin.x) / 5,  intervalInd);
+		}
+		
+		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);
 		
 
 	}
@@ -34,57 +53,70 @@ class GroupedBarChart extends Grid {
 	override private function draw(){
 
 		super.draw();
-
+		_step = 1;
 		if (_vertical){
 			
 			for (i in _data.items){
+			//	Sys.print("in if");
 				drawVerticalGroupedBarChart(cast(i,DataSet), _step);
-				_step += xDel * 2 * (_data.items.length - 1);
+				//_step += 10 * cast(_data.items[0],DataSet).items.length-1;
+				_step +=  (cast(_data.items[0],DataSet).items.length) * _intervalInd  ;
 			}
 			//drawVerticalBarChart(_data);	
 		} else {
 			for (i in _data.items){
 				drawHorizontalGroupedBarChart(cast(i,DataSet), _step);
-				_step+=10;
+				_step+=(cast(_data.items[0],DataSet).items.length) * _intervalInd  ;
 			}
 	
 		}
+
 
 	}
 
 	public function drawVerticalGroupedBarChart(bars:DataSet, startingX:Float){
 		
 		var prevX:Float = 0;
+		var bottom:Point = toGridPoint(new Point(0, 0));
+
+
+
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
-			var pos:Point = toGridPoint(new Point(startingX, item.y)); 
-			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
+			// Sys.print("x is: "+startingX+prevX+"\n");
+			// Sys.print("startingX is: "+startingX+"\n");
+			// Sys.print("prevX is: "+prevX+"\n");
 			
+			var pos:Point = toGridPoint(new Point(startingX, item.y)); 
+					
 			var height:Float = pos.y - bottom.y; //used to be bottom.y - bottom.y which led to height being 0
 			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
-			graphics.drawRect(pos.x+prevX, bottom.y, 20, height); // 
+			graphics.drawRect(pos.x+prevX, bottom.y, 15, height); // 
 			graphics.endFill();
 
-			prevX += prevX+20;
+			prevX += 16 + _intervalInd;
+
+			
 		}
 	}
 
 	public function drawHorizontalGroupedBarChart(bars:DataSet, startingY:Float){
 		
 		var prevY:Float = 0;
+		var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
 			var pos:Point = toGridPoint(new Point(item.y, startingY)); 
-			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
+			
 			
 			var width:Float = pos.x - bottom.x; //used to be bottom.y - bottom.y which led to height being 0
 			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
-			graphics.drawRect(bottom.x, pos.y+prevY, width, 20);
+			graphics.drawRect(bottom.x, pos.y-prevY, width, 15);
 			graphics.endFill();
 
-			prevY += prevY + 20;
+			prevY += 16 + _intervalInd;
 		}
 
 	}

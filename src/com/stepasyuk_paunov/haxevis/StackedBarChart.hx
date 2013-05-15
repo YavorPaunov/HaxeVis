@@ -7,6 +7,7 @@ import nme.display.DisplayObject;
 import nme.text.TextField;
 import nme.text.TextFormat;
 import com.stepasyuk_paunov.haxevis.Grid;
+import com.stepasyuk_paunov.haxevis.DataSetItem;
 
 
 class StackedBarChart extends Grid {
@@ -19,14 +20,23 @@ class StackedBarChart extends Grid {
 	
 	
 	
-	public function new (data:DataSet, vertical:Bool) {
+	public function new (data:DataSet, vertical:Bool, minInd:Float=1, intervalInd:Float=10) {
 
 		_data = data;
-		_showLegend = false;
 		_vertical = vertical;
-		_step = 10;
 		
-		super(data.max(DataSetItem.X) + 10, data.min(DataSetItem.X) - 10, 10, data.max(DataSetItem.Y) + 10, data.min(DataSetItem.Y) - 10, 10);
+		//_data.flip(Axis.x, Axis.y);
+
+		var gridMin:Point = new Point(_data.min(Axis.x), _data.min(Axis.y));
+		var gridMax:Point;
+		if (_vertical){
+			gridMax = new Point(_data.max(Axis.y), cast(_data.items[0],DataSet).sum(Axis.y));
+		}else{
+			gridMax = new Point(cast(_data.items[0],DataSet).sum(Axis.y), _data.max(Axis.y));
+		}
+		var interval:Point = new Point(intervalInd,  (gridMax.y - gridMin.y) / 10);
+
+		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);
 		
 
 	}
@@ -35,17 +45,20 @@ class StackedBarChart extends Grid {
 
 		super.draw();
 
+		//_data.flip(Axis.x, Axis.y);
+		_step = 2;
+
 		if (_vertical){
 			
 			for (i in _data.items){
 				drawVerticalStackedBarChart(cast(i,DataSet), _step);
-				_step+=10;
+				_step+=2;
 			}
-			//drawVerticalBarChart(_data);	
+	
 		} else {
 			for (i in _data.items){
 				drawHorizontalStackedBarChart(cast(i,DataSet), _step);
-				_step+=10;
+				_step+=2;
 			}
 	
 		}
@@ -55,15 +68,16 @@ class StackedBarChart extends Grid {
 	public function drawVerticalStackedBarChart(bars:DataSet, startingX:Int){
 		
 		var prevY:Float = 0;
+		var bottom:Point = toGridPoint(new Point(0,0));
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
 			var pos:Point = toGridPoint(new Point(startingX, item.y)); 
-			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
+			
 			
 			var height:Float = pos.y - bottom.y; //used to be bottom.y - bottom.y which led to height being 0
 			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
-			graphics.drawRect(pos.x, bottom.y + prevY, xDel*2, height); // 
+			graphics.drawRect(pos.x, bottom.y + prevY, 10, height); // 
 			graphics.endFill();
 
 			prevY +=height;
@@ -75,16 +89,17 @@ class StackedBarChart extends Grid {
 	public function drawHorizontalStackedBarChart(bars:DataSet, startingY:Float){
 		
 		var prevX:Float = 0;
+		var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
 		for (i in 0...bars.items.length) {
 			var item:DataSetItem = bars.items[i];
 			var pos:Point = toGridPoint(new Point(item.y, startingY)); 
-			var bottom:Point = toGridPoint(new Point(_xBottom, _yBottom));
+			
 			
 			var width:Float = pos.x - bottom.x; //used to be bottom.y - bottom.y which led to height being 0
 			graphics.lineStyle(1,0x1a1a1a);
 			graphics.beginFill(item.color);
 			//graphics.drawRect(pos.x, bottom.y + prevY, xDel*2, height);
-			graphics.drawRect(bottom.x + prevX, pos.y, width, yDel*2);
+			graphics.drawRect(bottom.x + prevX, pos.y, width, 10);
 			graphics.endFill();
 
 			prevX +=width;
