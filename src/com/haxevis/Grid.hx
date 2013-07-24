@@ -15,11 +15,13 @@ class Grid extends Sprite {
 	
 	// Gap X and Y gaps between the edge of the sprite and the beginning of the chart. That is where the tick labels will be.
 	// TODO: Calculate this dynamically.
-	private static inline var X:Float = 15; 
+	private static inline var X:Float = 25; 
 	private static inline var Y:Float = 25;
 	
 	private static inline var HEIGHT:Float = 300;
 	private static inline var WIDTH:Float = 300;
+	
+	
 	
 	@:isVar public var xTop(get, set):Float;
 	private function get_xTop():Float {
@@ -28,7 +30,9 @@ class Grid extends Sprite {
 	
 	private function set_xTop(value:Float):Float {
 		this.xTop = value;
-		draw();
+		if(autoRedraw) {
+			draw();
+		}
 		return this.xTop;
 	}
 	
@@ -39,7 +43,9 @@ class Grid extends Sprite {
 	
 	function set_xBottom(value:Float):Float {
 		this.xBottom = value;
-		draw();
+		if(autoRedraw) {
+			draw();
+		}
 		return this.xBottom;
 	}
 	
@@ -48,10 +54,11 @@ class Grid extends Sprite {
 		return this.xDel;
 	}
 	
-	function set_xDel(value:Float):Float 
-	{
+	function set_xDel(value:Float):Float {
 		this.xDel = value;
-		draw();
+		if(autoRedraw) {
+			draw();
+		}
 		return this.xDel;
 	}
 	
@@ -63,20 +70,24 @@ class Grid extends Sprite {
 	
 	private function set_yTop(value:Float):Float {
 		this.yTop = value;
-		draw();
+		if(autoRedraw) {
+			draw();
+		}
 		return this.yTop;
 	}
 	
 	
 	@:isVar public var yBottom(get, set):Float;
-	
+
 	function get_yBottom():Float {
 		return this.yBottom;
 	}
 	
 	function set_yBottom(value:Float):Float {
 		this.yBottom = value;
-		draw();
+		if(autoRedraw) {
+			draw();
+		}
 		return this.yBottom;
 	}
 	
@@ -89,7 +100,9 @@ class Grid extends Sprite {
 	
 	function set_yDel(value:Float):Float {
 		this.yDel = value;
-		draw();
+		if(autoRedraw) {
+			draw();
+		}
 		return this.yDel;
 	}
 	
@@ -102,7 +115,9 @@ class Grid extends Sprite {
 	
 	function set_lineAtZero(value:Bool):Bool {
 		this.lineAtZero = value;
-		this.draw();
+		if(autoRedraw) {
+			draw();
+		}
 		return this.lineAtZero;
 	}
 
@@ -114,16 +129,35 @@ class Grid extends Sprite {
 	
 	function set_alwaysShowZero(value:Bool):Bool {
 		this.alwaysShowZero = value;
-		draw();
+		if(autoRedraw) {
+			draw();
+		}
 		return this.alwaysShowZero;
 	}
 	
 	private var ratio:Point;
-	public var showGridY:Bool;
-	public var showGridX:Bool;
+	@:isVar public var showGridY(default, set):Bool;
+	function set_showGridY(value:Bool):Bool {
+		this.showGridY = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.showGridY;
+	}
+	
+	@:isVar public var showGridX(default, set):Bool;
+	function set_showGridX(value:Bool):Bool {
+		this.showGridX = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.showGridX;
+	}
 	
 	public var gridXThickness:Float;
 	public var gridYThickness:Float;
+
+	public var autoRedraw:Bool;
 	
 	public function new(xTop:Float, xBottom:Float, xDel:Float, yTop:Float, yBottom:Float, yDel:Float) {
 		super();
@@ -172,6 +206,7 @@ class Grid extends Sprite {
 		var yRatio:Float = HEIGHT / yDif;
 
 		this.ratio = new Point(xRatio, yRatio);
+		
 		var xZeroPos:Float;
 		if (this.xBottom < 0) {
 			xZeroPos = X - this.xBottom * xRatio;
@@ -305,7 +340,8 @@ class Grid extends Sprite {
 	}
 
 	private function toGridPoint(p:Point):Point {
-		var x:Float, y:Float;
+		var x:Float = X, y:Float = Y;
+		
 		if (this.alwaysShowZero) {
 			if (this.xBottom >= 0) {
 				x = X;
@@ -331,6 +367,7 @@ class Grid extends Sprite {
 			y = Y + HEIGHT + this.yBottom * this.ratio.y;
 		}		
 		y -= p.y * this.ratio.y;
+		trace(x, y);
 		return new Point(x, y);
 	}
 }
