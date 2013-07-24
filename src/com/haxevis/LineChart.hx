@@ -4,11 +4,31 @@ import flash.geom.Point;
 
 class LineChart extends Grid {
 
-	private var _showLegend:Bool;
-	private var _legend:Legend;
-	private var _data:DataSet;
+	@:isVar public var showLegend(get, set):Bool;
+	function get_showLegend():Bool {
+		return this.showLegend;
+	}
 	
+	function set_showLegend(value:Bool):Bool {
+		this.showLegend = value;
+		if(this.showLegend){
+			if (this.legend != null) {		
+				this.legend.setValues(this.data);
+			} else {
+				this.legend = new Legend(this.data);
+				this.legend.x = Grid.X + Grid.WIDTH + 20;
+				this.legend.y = Grid.Y;
+			}
+			addChild(this.legend);
+		} else if (this.legend != null && this.legend.parent == this) {
+			removeChild(legend);
+		}
+		return showLegend;
+	}
 	
+	private var legend:Legend;
+	private var data:DataSet;
+		
 	/**
 	 * 
 	 * @param  data A DataSet containing data for the 
@@ -16,12 +36,13 @@ class LineChart extends Grid {
 	 * @param  intervalInd The interval between the values of the independent variable
 	 */
 	public function new (data:DataSet, minInd:Float=1, intervalInd:Float=1) {
-		_data = data;
-		
-		for (item in data.items) 
-		{
+		this.data = data;
+
+		for (item in data.items) {
 			cast(item, DataSet).setInterval(Axis.x, intervalInd, minInd);
 		}
+		
+		//this.lineAtZero = true;
 		
 		var gridMin:Point = new Point(data.min(Axis.x), data.min(Axis.y));
 		var gridMax:Point = new Point(data.max(Axis.x), data.max(Axis.y));
@@ -32,8 +53,8 @@ class LineChart extends Grid {
 
 	override private function draw():Void {
 		super.draw();
-		for (i in 0..._data.items.length) {
-			var subData:DataSet = cast(_data.items[i], DataSet);
+		for (i in 0...this.data.items.length) {
+			var subData:DataSet = cast(this.data.items[i], DataSet);
 			var startPoint:Point = toGridPoint(new Point(subData.items[0].x, subData.items[0].y));
 			graphics.lineStyle(1, subData.color);
 			graphics.moveTo(startPoint.x, startPoint.y);
@@ -41,7 +62,7 @@ class LineChart extends Grid {
 			for (item in subData.items){
 				pointTo = toGridPoint(new Point(item.x, item.y));
 				graphics.lineTo(pointTo.x, pointTo.y);
-				
+
 			}
 			for (item in subData.items) {
 				pointTo = toGridPoint(new Point(item.x, item.y));
@@ -52,81 +73,52 @@ class LineChart extends Grid {
 		}
 	}
 	
-	override private function set_xTop(value:Float):Float 
-	{
-		_xTop = value;
-		draw();
-		return _xTop;
-	}
-	
-	override private function set_xBottom(value:Float):Float 
-	{
-		_xBottom = value;
-		draw();
-		return _xBottom;
-	}
-	
-	override private function set_xDel(value:Float):Float 
-	{
-		_xDel = value;
-		draw();
-		return _xDel;
-	}
-	
-	override private function set_yTop(value:Float):Float 
-	{
-		_yTop = value;
-		draw();
-		return _yTop;
-	}
-		
-	override private function set_yBottom(value:Float):Float 
-	{
-		
-		_yBottom = value;
-		draw();
-		return _yBottom;
-	}
-		
-	override private function set_yDel(value:Float):Float 
-	{
-		_yDel = value;
-		draw();
-		return _yDel;
-	}
-		
-	override private function set_lineAtZero(value:Bool):Bool 
-	{
-		_lineAtZero = value;
-		draw();
-		return _lineAtZero;
-	}
-		
-	override private function set_alwaysShowZero(value:Bool):Bool 
-	{
-		_alwaysShowZero = value;
-		draw();
-		return _alwaysShowZero;
-	}
-	
-	private function get_showLegend():Bool 
-	{
-		return _showLegend;
-	}
-	
-	private function set_showLegend(value:Bool):Bool 
-	{
-		if (_legend != null) {			
-			_legend.setValues(_data);
-		} else {
-			_legend = new Legend(_data);
-			_legend.x = Grid.X + Grid.WIDTH + 20;
-			_legend.y = Grid.Y;
-		}
-		addChild(_legend);
-		return _showLegend = value;
-	}
-	
-	public var showLegend(get_showLegend, set_showLegend):Bool;
-		
+	//override function set_xTop(value:Float):Float {
+		//this.xTop = value;
+		//draw();
+		//return this.xTop;
+	//}
+	//
+	//override function set_xBottom(value:Float):Float {
+		//super.xBottom = value;
+		//draw();
+		//return super.xBottom;
+	//}
+	//
+	//override function set_xDel(value:Float):Float {
+		//super.xDel = value;
+		//draw();
+		//return super.xDel;
+	//}
+	//
+	//override function set_yTop(value:Float):Float {
+		//super.yTop = value;
+		//draw();
+		//return super.yTop;
+	//}
+		//
+	//override function set_yBottom(value:Float):Float {
+		//super.yBottom = value;
+		//draw();
+		//return super.yBottom;
+	//}
+		//
+	//override function set_yDel(value:Float):Float {
+		//super.yDel = value;
+		//draw();
+		//return super.yDel;
+	//}
+		//
+	//override function set_lineAtZero(value:Bool):Bool {
+		//super.lineAtZero = value;
+		//draw();
+		//return super.lineAtZero;
+	//}
+		//
+	//override function set_alwaysShowZero(value:Bool):Bool {
+		//super.alwaysShowZero = value;
+		//draw();
+		//return super.alwaysShowZero;
+	//}
+
 }
