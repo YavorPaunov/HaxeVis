@@ -11,7 +11,7 @@ import flash.text.TextFieldAutoSize;
  * @author Yavor
  */
 
-class Grid extends Sprite {
+class Grid extends Chart {
 	
 	// Gap X and Y gaps between the edge of the sprite and the beginning of the chart. That is where the tick labels will be.
 	// TODO: Calculate this dynamically.
@@ -120,20 +120,6 @@ class Grid extends Sprite {
 		}
 		return this.lineAtZero;
 	}
-
-	@:isVar public var alwaysShowZero(get, set):Bool;
-	
-	function get_alwaysShowZero():Bool {
-		return this.alwaysShowZero;
-	}
-	
-	function set_alwaysShowZero(value:Bool):Bool {
-		this.alwaysShowZero = value;
-		if(autoRedraw) {
-			draw();
-		}
-		return this.alwaysShowZero;
-	}
 	
 	private var ratio:Point;
 	@:isVar public var showGridY(default, set):Bool;
@@ -165,7 +151,6 @@ class Grid extends Sprite {
 		cacheAsBitmap = true;
 		
 		this.lineAtZero = false;
-		this.alwaysShowZero = false;
 		this.showGridX = false;
 		this.showGridY = false;
 		
@@ -188,7 +173,8 @@ class Grid extends Sprite {
 		draw();
 	}
 	
-	private function draw():Void {
+	override private function draw():Void {
+		
 		graphics.clear();
 		while (numChildren > 0) {
 			removeChildAt(0);
@@ -196,11 +182,6 @@ class Grid extends Sprite {
 
 		var xDif:Float = this.xTop - this.xBottom;
 		var yDif:Float = this.yTop - this.yBottom;
-
-		if (this.alwaysShowZero) {
-			xDif = Math.max(xDif, Math.max(this.xTop, -this.xBottom));
-			yDif = Math.max(yDif, Math.max(this.yTop, -this.yBottom));
-		}
 
 		var xRatio:Float = WIDTH / xDif;
 		var yRatio:Float = HEIGHT / yDif;
@@ -225,10 +206,6 @@ class Grid extends Sprite {
 		//graphics.beginFill(0, 1);
 		var xLowestDel:Float = this.xBottom - this.xBottom % this.xDel;
 		var xHighestDel:Float = this.xTop - this.xTop % this.xDel;
-		if (this.alwaysShowZero) {
-			xLowestDel = Math.min(xLowestDel, 0);
-			xHighestDel = Math.max(xHighestDel, 0);
-		}
 		var xCurDel:Float = xLowestDel;
 		while (xCurDel <= xHighestDel) {
 			// xCurDel or (xCurDel - xLowestDel)
@@ -277,10 +254,6 @@ class Grid extends Sprite {
 
 		var yLowestDel:Float = this.yBottom - this.yBottom % this.yDel;
 		var yHighestDel:Float =this.yTop - this.yTop % this.yDel;
-		if (this.alwaysShowZero) {
-			yLowestDel = Math.min(yLowestDel, 0);
-			yHighestDel = Math.max(yHighestDel, 0);
-		}
 		var yCurDel:Float = yLowestDel;
 		while (yCurDel <= yHighestDel) {
 			var targetX:Float;
@@ -342,32 +315,12 @@ class Grid extends Sprite {
 	private function toGridPoint(p:Point):Point {
 		var x:Float = X, y:Float = Y;
 		
-		if (this.alwaysShowZero) {
-			if (this.xBottom >= 0) {
-				x = X;
-			} else if (this.xTop <= 0) {
-				x = X + WIDTH;
-			} else {
-				x = X - this.xBottom * this.ratio.x;
-			}
-		} else {
-			x = X - this.xBottom * this.ratio.x;
-		}
+		x = X - this.xBottom * this.ratio.x;
 		x += p.x * this.ratio.x;
 		
-		if (this.alwaysShowZero) {
-			if (this.yBottom >= 0) {
-				y = Y + HEIGHT;
-			} else if (this.yTop <= 0) {
-				y = Y;
-			} else {
-				y = Y + HEIGHT + this.yBottom * this.ratio.y;
-			}
-		} else {
-			y = Y + HEIGHT + this.yBottom * this.ratio.y;
-		}		
+		y = Y + HEIGHT + this.yBottom * this.ratio.y;
 		y -= p.y * this.ratio.y;
-		trace(x, y);
+		
 		return new Point(x, y);
 	}
 }
