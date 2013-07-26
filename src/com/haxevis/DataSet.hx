@@ -2,38 +2,23 @@ package com.haxevis;
 
 import com.haxevis.DataSetItem;
 
-/**
- * ...
- * @author Yavor
- */
-using com.haxevis.DataSetItem;
 class DataSet extends DataSetItem
 {
 	
-	private var _items:Array<DataSetItem>;
+	public var items:Array<DataSetItem>;
 	
-	/**
-	 * 
-	 * @param	?items
-	 */
     public function new(?items:Array<DataSetItem>) {
 		super();
 		if (items != null) {
-			_items = items;
+			this.items = items;
 		} else {
-			_items = new Array();
+			this.items = new Array();
 		}
     }
 	
-	/**
-	 * 
-	 * @param	field
-	 * @return
-	 */
-	public function sum(axis:DataSetItem.Axis):Float {
+	public function sum(axis:Axis):Float {
 		var sum:Float = 0;
-		for (item in _items) 
-		{
+		for (item in this.items) {
 			switch(axis) {
 				case Axis.x: sum += item.x;
 				case Axis.y: sum += item.y;
@@ -43,24 +28,13 @@ class DataSet extends DataSetItem
 		return sum;
 	}
 	
-	/**
-	 * 
-	 * @param	field
-	 * @return
-	 */
-	public function avg(axis:DataSetItem.Axis):Float {
+	public function avg(axis:Axis):Float {
 		return sum(axis) / items.length;
 	}
 	
-	/**
-	 * 
-	 * @param	field
-	 * @return
-	 */
-	public function min(axis:DataSetItem.Axis):Float {
+	public function min(axis:Axis):Float {
 		var min:Float = Math.POSITIVE_INFINITY;
-		for (item in _items) 
-		{
+		for (item in this.items) {
 			if (Std.is(item, DataSet)) {
 				var set:DataSet = cast(item, DataSet);
 				min = Math.min(set.min(axis), min);
@@ -80,10 +54,9 @@ class DataSet extends DataSetItem
 	 * @param	field
 	 * @return
 	 */
-	public function max(axis:DataSetItem.Axis):Float {
+	public function max(axis:Axis):Float {
 		var max:Float = Math.NEGATIVE_INFINITY;
-		for (item in _items) 
-		{
+		for (item in this.items) {
 			if (Std.is(item, DataSet)) {
 				var set:DataSet = cast(item, DataSet);
 				max = Math.max(set.max(axis), max);
@@ -98,13 +71,7 @@ class DataSet extends DataSetItem
 		return max;
 	}
 	
-	/**
-	 * 
-	 * @param	field
-	 * @param	interval
-	 * @param	?min
-	 */
-	public function setInterval(axis:DataSetItem.Axis, interval:Float, ?min:Float):Void {
+	public function setInterval(axis:Axis, interval:Float, ?min:Float):Void {
 		var current:Float;
 		if (min == null) {
 			current = interval;
@@ -112,8 +79,7 @@ class DataSet extends DataSetItem
 			current = min;
 		}
 		
-		for (item in _items) 
-		{
+		for (item in this.items) {
 			switch(axis) {
 				case Axis.x:item.x = current;
 				case Axis.y:item.y = current;
@@ -123,16 +89,10 @@ class DataSet extends DataSetItem
 		}
 	}
 	
-	/**
-	 * 
-	 * @param	field
-	 * @return
-	 */
-	public function getRatios(axis:DataSetItem.Axis):Array<Float> {
+	public function getRatios(axis:Axis):Array<Float> {
 		var ratios:Array<Float> = new Array();
 		var sum:Float = sum(axis);
-		for (item in _items) 
-		{
+		for (item in this.items) {
 			var value:Float;
 			switch(axis) {
 				case Axis.x:value = item.x;
@@ -144,105 +104,98 @@ class DataSet extends DataSetItem
 		return ratios;
 	}
 	
-	/**
-	 * 
-	 * @param	field1
-	 * @param	field2
-	 */
-	override public function flip(axis1:DataSetItem.Axis, axis2:DataSetItem.Axis):Void 
-	{
-		for (item in _items) 
-		{
-			item.flip(axis1, axis2);
+	override public function flip(axis1:Axis, axis2:Axis):Void {
+		if(this.items != null) {
+			for (item in this.items) {
+				item.flip(axis1, axis2);
+			}
 		}
 	}
-	
-	
-	// Getters and setters:
-	private function get_items():Array<DataSetItem> 
-	{
-		return _items;
-	}
-	
-	private function set_items(value:Array<DataSetItem>):Array<DataSetItem> 
-	{
-		return _items = value;
-	}
-	
-	public var items(get_items, set_items):Array<DataSetItem>;
-	
+		
 	override private function set_color(value:Int):Int {
-		for (item in _items) 
-		{
-			item.color = value;
+		if (this.items != null) {			
+			for (item in this.items) {
+				item.color = value;
+			}
 		}
 		return value;
 	}
 	
 	override private function get_color():Int {
-		if (items.length > 0) {
-			return items[0].color;
+		if (this.items != null) {			
+			if (items.length > 0) {
+				return items[0].color;
+			}
 		}
-		return -1;
+		return this.color;
 	}
 	
-	override private function get_name():String 
-	{
-		if (items.length > 0) {
-			return items[0].name;
+	override private function get_name():String {
+		if (this.items != null) {
+			if (items.length > 0) {
+				return items[0].name;
+			}
 		}
-		return null;
+		return this.name;
 	}
 	
-	override private function set_name(value:String):String 
-	{
-		for (item in _items) 
-		{
-			item.name = value;
+	override private function set_name(value:String):String {
+		this.name = name;
+		if (this.items != null) {
+			for (item in this.items) {
+				item.name = value;
+			}
 		}
 		return value;
 	}
 	
-	override private function get_x():Float 
-	{
+	override private function get_x():Float {
 		return avg(Axis.x);
 	}
 	
-	override private function set_x(value:Float):Float 
-	{
-		for (item in _items) 
-		{
-			item.x = value;
+	override private function set_x(value:Float):Float {
+		if(this.items != null){
+			for (item in this.items) {
+				item.x = value;
+			}
 		}
 		return value;
 	}
 	
-	override private function get_y():Float 
-	{
+	override private function get_y():Float {
 		return avg(Axis.y);
 	}
 	
-	override private function set_y(value:Float):Float 
-	{
-		for (item in _items) 
-		{
-			item.y = value;
+	override private function set_y(value:Float):Float {
+		if (this.items != null) {			
+			for (item in this.items) {
+				item.y = value;
+			}
 		}
 		return value;
 	}
 	
-	override private function get_z():Float 
-	{
+	override private function get_z():Float {
 		return avg(Axis.z);
 	}
 	
-	override private function set_z(value:Float):Float 
-	{
-		for (item in _items) 
-		{
-			item.z = value;
+	override private function set_z(value:Float):Float {
+		if (this.items != null) {
+			for (item in this.items) {
+				item.z = value;
+			}
 		}
 		return value;
+	}
+	
+	override public function toString():String {
+		var str:String = super.toString();
+		str += "\n[";
+		for (item in this.items) {
+			str += "\n\tx: " + item.x + " y: " + item.y + " z: " + item.z;
+		}
+		str += "\n]";
+		return str;
 	}
 	
 }
