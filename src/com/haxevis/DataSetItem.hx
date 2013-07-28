@@ -1,8 +1,4 @@
 package com.haxevis;
-/**
- * ...
- * @author Yavor
- */
 
 enum Axis {
 	x;
@@ -10,8 +6,7 @@ enum Axis {
 	z;
 }
 	
-class DataSetItem
-{
+class DataSetItem {
 	
 	@:isVar public var x(get_x, set_x):Float;
 	
@@ -63,14 +58,6 @@ class DataSetItem
 		return this.color = value;
 	}
 			
-	/**
-	 * 
-	 * @param	x
-	 * @param	y
-	 * @param	z
-	 * @param	name
-	 * @param	color
-	 */
 	public function new(x:Float=0, y:Float=0, z:Float=0, name:String="", color:Int=-1) {
 		this.name = name;
 		this.color = color;
@@ -80,11 +67,6 @@ class DataSetItem
 		this.z = z;
 	}
 	
-	/**
-	 * 
-	 * @param	field1
-	 * @param	field2
-	 */
 	public function flip(axis1:Axis, axis2:Axis):Void {
 		var field1:String;
 		var field2:String;

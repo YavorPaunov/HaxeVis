@@ -2,8 +2,7 @@ package com.haxevis;
 
 import com.haxevis.DataSetItem;
 
-class DataSet extends DataSetItem
-{
+class DataSet extends DataSetItem{
 	
 	public var items:Array<DataSetItem>;
 	
@@ -48,12 +47,7 @@ class DataSet extends DataSetItem
 		}
 		return min;
 	}
-	
-	/**
-	 * 
-	 * @param	field
-	 * @return
-	 */
+
 	public function max(axis:Axis):Float {
 		var max:Float = Math.NEGATIVE_INFINITY;
 		for (item in this.items) {

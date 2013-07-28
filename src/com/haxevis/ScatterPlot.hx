@@ -10,30 +10,11 @@ import flash.geom.Point;
 
 class ScatterPlot extends Grid
 {
-	@:isVar public var showLegend(get, set):Bool;
-	function get_showLegend():Bool {
-		return this.showLegend;
-	}
 	
-	function set_showLegend(value:Bool):Bool {
-		if (this.legend != null) {			
-			this.legend.setValues(this.data);
-		} else {
-			this.legend = new Legend(this.data);
-			this.legend.x = Grid.X + Grid.WIDTH + 20;
-			this.legend.y = Grid.Y;
-		}
-		
-		addChild(this.legend);
-		return this.showLegend = value;
-	}
-	
-	private var legend:Legend;
-	private var data:DataSet;
-
 	public function new(data:DataSet) {
+		super();
 		this.data = data;
-		super(data.max(Axis.x) + 10, data.min(Axis.x) - 10, 10, data.max(Axis.y) + 10, data.min(Axis.y) - 10, 10);
+		//data.max(Axis.x) + 10, data.min(Axis.x) - 10, data.max(Axis.y) + 10, data.min(Axis.y) - 10
 		draw();
 	}
 	

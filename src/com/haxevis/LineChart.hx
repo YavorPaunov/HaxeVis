@@ -4,8 +4,6 @@ import flash.geom.Point;
 
 class LineChart extends Grid {
 
-	
-	
 	/**
 	 * 
 	 * @param  data A DataSet containing data for the 
@@ -17,15 +15,15 @@ class LineChart extends Grid {
 		
 		var gridMin:Point = new Point(data.min(Axis.x), data.min(Axis.y));
 		var gridMax:Point = new Point(data.max(Axis.x), data.max(Axis.y));
-		var interval:Point = new Point((gridMax.x - gridMin.x) / 10,  (gridMax.y - gridMin.y) / 10);
+		var interval:Point = new Point((gridMax.x - gridMin.x),  (gridMax.y - gridMin.y));
 		
-		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);
+		super();
 	}
 
 	override private function draw():Void {
 		super.draw();
 		for (j in 0...this.data.items.length) {
-			var items:DataSet = cast(this.data.items[j], DataSet);
+			var items:DataSet = cast this.data.items[j];
 			for (i in 0...items.items.length) {
 				var item = items.items[i];
 				
