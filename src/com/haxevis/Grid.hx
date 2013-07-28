@@ -17,11 +17,22 @@ typedef GridGraphicsElement = {
 	alpha:Float,
 	color:Int
 }
+
 typedef GridGraphics = {
 	ticks: GridGraphicsElement,
 	gridlines: GridGraphicsElement,
 	axislines: GridGraphicsElement,
 	borders: GridGraphicsElement
+}
+
+enum LabelPosition {
+	axis;
+	point;
+}
+
+enum LabelText {
+	value;
+	name;
 }
 	
 class Grid extends Chart {
@@ -37,15 +48,17 @@ class Grid extends Chart {
 	public var gridGraphics:GridGraphics;
 	
 	@:isVar public var ticksX(default, set):Array<Float>;
-	private function set_ticksX(value:Array<Float>):Array<Float> {
+	
+	function set_ticksX(value:Array<Float>):Array<Float> {
 		if (autoRedraw) {
-			draw();			
+			draw();
 		}
 		return this.ticksX = value;
 	}
 	
 	@:isVar public var ticksY(default, set):Array<Float>;
-	private function set_ticksY(value:Array<Float>):Array<Float> {
+	
+	function set_ticksY(value:Array<Float>):Array<Float> {
 		if (autoRedraw) {
 			draw();
 		}
@@ -53,6 +66,7 @@ class Grid extends Chart {
 	}
 	
 	@:isVar public var autoTicks(default, set):Bool;
+	
 	function set_autoTicks(value:Bool):Bool {
 		if (value) {
 			calculateTicks();
@@ -61,6 +75,7 @@ class Grid extends Chart {
 	}
 	
 	@:isVar public var lineX(default, set):Float;
+	
 	function set_lineX(value:Float):Float {
 		if (autoRedraw) {
 			draw();
@@ -69,6 +84,7 @@ class Grid extends Chart {
 	}
 	
 	@:isVar public var lineY(default, set):Float;
+	
 	function set_lineY(value:Float):Float {
 		if (autoRedraw) {
 			draw();
@@ -76,12 +92,9 @@ class Grid extends Chart {
 		return this.lineY = value;
 	}
 	
-	@:isVar public var xTop(get, set):Float;
-	private function get_xTop():Float {
-		return this.xTop;
-	}
+	@:isVar public var xTop(default, set):Float;
 	
-	private function set_xTop(value:Float):Float {
+	function set_xTop(value:Float):Float {
 		this.xTop = value;
 		if (this.xTop < this.xBottom) {
 			throw new Error("Top x cannot be lower than bottom x.");
@@ -92,13 +105,7 @@ class Grid extends Chart {
 		return this.xTop;
 	}
 	
-	@:isVar public var xBottom(get, set):Float;
-	function get_xBottom():Float {
-		if (this.xTop < this.xBottom) {
-			throw new Error("Top x cannot be lower than bottom x.");
-		}
-		return this.xBottom;
-	}
+	@:isVar public var xBottom(default, set):Float;
 	
 	function set_xBottom(value:Float):Float {
 		this.xBottom = value;
@@ -108,13 +115,9 @@ class Grid extends Chart {
 		return this.xBottom;
 	}
 		
-	@:isVar public var yTop(get, set):Float;
-
-	private function get_yTop():Float {
-		return this.yTop;
-	}
+	@:isVar public var yTop(default, set):Float;
 	
-	private function set_yTop(value:Float):Float {
+	function set_yTop(value:Float):Float {
 		this.yTop = value;
 		if (this.yTop < this.yBottom) {
 			throw new Error("Top y cannot be lower than bottom y.");			
@@ -125,11 +128,7 @@ class Grid extends Chart {
 		return this.yTop;
 	}
 	
-	@:isVar public var yBottom(get, set):Float;
-
-	function get_yBottom():Float {
-		return this.yBottom;
-	}
+	@:isVar public var yBottom(default, set):Float;
 	
 	function set_yBottom(value:Float):Float {
 		this.yBottom = value;
@@ -140,10 +139,11 @@ class Grid extends Chart {
 			draw();
 		}
 		return this.yBottom;
-	}	
+	}
 		
-	private var ratio:Point;
+	
 	@:isVar public var showGridY(default, set):Bool;
+	
 	function set_showGridY(value:Bool):Bool {
 		this.showGridY = value;
 		if (this.autoRedraw) {
@@ -153,6 +153,7 @@ class Grid extends Chart {
 	}
 	
 	@:isVar public var showGridX(default, set):Bool;
+	
 	function set_showGridX(value:Bool):Bool {
 		this.showGridX = value;
 		if (this.autoRedraw) {
@@ -161,9 +162,87 @@ class Grid extends Chart {
 		return this.showGridX;
 	}
 	
-	public var gridXThickness:Float;
-	public var gridYThickness:Float;
-
+	@:isVar public var showLabelsY(default, set):Bool;
+	
+	function set_showLabelsY(value:Bool):Bool {
+		this.showLabelsY = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.showLabelsY;
+	}
+	
+	@:isVar public var showLabelsX(default, set):Bool;
+	
+	function set_showLabelsX(value:Bool):Bool {
+		this.showLabelsX = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.showLabelsX;
+	}
+	
+	@:isVar public var showTicksY(default, set):Bool;
+	
+	function set_showTicksY(value:Bool):Bool {
+		this.showTicksY = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.showTicksY;
+	}
+	
+	@:isVar public var showTicksX(default, set):Bool;
+	
+	function set_showTicksX(value:Bool):Bool {
+		this.showTicksX = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.showTicksX;
+	}
+	
+	@:isVar public var xLabelPosition(default, set):LabelPosition;
+	
+	function set_xLabelPosition(value:LabelPosition):LabelPosition {
+		this.xLabelPosition = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.xLabelPosition;
+	}
+	
+	@:isVar public var yLabelPosition(default, set):LabelPosition;
+	
+	function set_yLabelPosition(value:LabelPosition):LabelPosition {
+		this.yLabelPosition = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.yLabelPosition;
+	}
+	
+	@:isVar public var xLabelText(default, set):LabelText;
+	
+	function set_xLabelText(value:LabelText):LabelText {
+		this.xLabelText = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.xLabelText;
+	}
+	
+	@:isVar public var yLabelText(default, set):LabelText;
+	
+	function set_yLabelText(value:LabelText):LabelText {
+		this.yLabelText = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.yLabelText;
+	}
+	
+	private var ratio:Point;
 	public var autoRedraw:Bool;
 	
 	public function new() {
@@ -207,13 +286,22 @@ class Grid extends Chart {
 			}
 		}
 		
+		this.showLabelsY = false;
+		this.showLabelsX = false;
+		
+		this.showTicksX = true;
+		this.showTicksY = true;
+		
+		this.xLabelPosition = LabelPosition.axis;
+		this.yLabelPosition = LabelPosition.axis;
+		
+		this.xLabelText = LabelText.name;
+		this.yLabelText = LabelText.name;
+		
 	}
 	
 	override private function draw():Void {
 		graphics.clear();
-		
-		
-		
 		
 		while (numChildren > 0) {
 			removeChildAt(0);
@@ -240,79 +328,81 @@ class Grid extends Chart {
 		} else {
 			yZeroPos = Y+HEIGHT;
 		}
+		
+		if(this.showTicksX) {
+			for (tickX in this.ticksX) {
+				var targetX:Float = tickX * this.ratio.x + xZeroPos; 
+				var targetY:Float;
+				targetY = Y + HEIGHT; //yZeroPos - lineY * this.ratio.y;
+				// Add ticks			
+				graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
+				graphics.moveTo(targetX, targetY);
+				graphics.lineTo(targetX, targetY+4);
+							
+				if (this.showGridX) {
+					graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
+					graphics.moveTo(targetX, Y);
+					graphics.lineTo(targetX, Y + HEIGHT);
+				}
+				graphics.lineStyle();
+				
+				var valueStringRaw:String = Std.string(tickX);
+				var floatingPointIndex:Int = valueStringRaw.indexOf(".");
+				var valueString:String;
 
-		for (tickX in this.ticksX) {
-			
-			var targetX:Float = tickX * this.ratio.x + xZeroPos; 
-			var targetY:Float;
-			targetY = Y + HEIGHT; //yZeroPos - lineY * this.ratio.y;
-			
-			// Add ticks			
-			graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
-			graphics.moveTo(targetX, targetY);
-			graphics.lineTo(targetX, targetY+4);
-						
-			if (this.showGridX) {
-				graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
-				graphics.moveTo(targetX, Y);
-				graphics.lineTo(targetX, Y + HEIGHT);
+				if(floatingPointIndex >= 0){
+					valueString = valueStringRaw.substr(0, floatingPointIndex + 3);
+				} else {
+					valueString = valueStringRaw;
+				}
+				var valueField:TextField = new TextField();
+				valueField.selectable = false;
+				valueField.text = valueString;
+				valueField.autoSize = TextFieldAutoSize.LEFT;
+				valueField.x = targetX - valueField.width / 2;
+				valueField.y = targetY + 2;
+				addChild(valueField);
 			}
-			graphics.lineStyle();
-			
-			var valueStringRaw:String = Std.string(tickX);
-			var floatingPointIndex:Int = valueStringRaw.indexOf(".");
-			var valueString:String;
-
-			if(floatingPointIndex >= 0){
-				valueString = valueStringRaw.substr(0, floatingPointIndex + 3);
-			} else {
-				valueString = valueStringRaw;
-			}
-			var valueField:TextField = new TextField();
-			valueField.selectable = false;
-			valueField.text = valueString;
-			valueField.autoSize = TextFieldAutoSize.LEFT;
-			valueField.x = targetX - valueField.width / 2;
-			valueField.y = targetY + 2;
-			addChild(valueField);
 		}
 		
-		for (tickY in this.ticksY) {
-			var targetX:Float;
-			
-			targetX = X; //xZeroPos + lineX * this.ratio.x;
-			
-			// Add ticks
-			var targetY:Float = yZeroPos - tickY * this.ratio.y;
-			
-			graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
-			graphics.moveTo(targetX, targetY);
-			graphics.lineTo(targetX-4, targetY);
-			graphics.lineStyle();
-			
-			if (this.showGridY) {
-				graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
-				graphics.moveTo(X, targetY);
-				graphics.lineTo(X + WIDTH, targetY);				
+		if(showTicksY) {
+			for (tickY in this.ticksY) {
+				var targetX:Float;
+				
+				targetX = X; //xZeroPos + lineX * this.ratio.x;
+				
+				// Add ticks
+				var targetY:Float = yZeroPos - tickY * this.ratio.y;
+				
+				graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
+				graphics.moveTo(targetX, targetY);
+				graphics.lineTo(targetX-4, targetY);
+				graphics.lineStyle();
+				
+				if (this.showGridY) {
+					graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
+					graphics.moveTo(X, targetY);
+					graphics.lineTo(X + WIDTH, targetY);				
+				}
+				
+				var valueString:String;
+				var valueStringRaw:String = Std.string(tickY);
+				var floatingPointIndex:Int = valueStringRaw.indexOf(".");
+				if(floatingPointIndex >= 0){
+					valueString = valueStringRaw.substr(0, floatingPointIndex + 3);
+				} else {
+					valueString = valueStringRaw;
+				}
+				
+				var valueField:TextField = new TextField();
+				valueField.selectable = false;
+				
+				valueField.text = valueString;
+				valueField.autoSize = TextFieldAutoSize.LEFT;
+				valueField.x = targetX - valueField.width - 5;
+				valueField.y = targetY - valueField.height / 2;
+				addChild(valueField);
 			}
-			
-			var valueStringRaw:String = Std.string(tickY);
-			var floatingPointIndex:Int = valueStringRaw.indexOf(".");
-			var valueString:String;
-			
-			if(floatingPointIndex >= 0){
-				valueString = valueStringRaw.substr(0, floatingPointIndex + 3);
-			} else {
-				valueString = valueStringRaw;
-			}
-			
-			var valueField:TextField = new TextField();
-			valueField.selectable = false;
-			valueField.text = valueString;
-			valueField.autoSize = TextFieldAutoSize.LEFT;
-			valueField.x = targetX - valueField.width - 5;
-			valueField.y = targetY - valueField.height / 2;
-			addChild(valueField);
 		}
 		
 		graphics.endFill();
@@ -321,7 +411,7 @@ class Grid extends Chart {
 		
 		graphics.moveTo(xZeroPos + lineX * this.ratio.x, Y);
 		graphics.lineTo(xZeroPos + lineX * this.ratio.x, Y + HEIGHT);
-
+		
 		graphics.moveTo(X, yZeroPos - lineY * this.ratio.y);
 		graphics.lineTo(X + WIDTH, yZeroPos - lineY * this.ratio.y);
 		
