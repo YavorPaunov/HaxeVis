@@ -34,6 +34,15 @@ enum LabelText {
 	value;
 	name;
 }
+
+enum LabelRelativePosition {
+	top;
+	bottom;
+	left;
+	right;
+	center;
+	dist(x:Int, y:Int);
+}
 	
 class Grid extends Chart {
 	
@@ -436,7 +445,7 @@ class Grid extends Chart {
 		graphics.lineStyle();
 	}
 
-	private function addLabel(item:DataSetItem, pos:Point, vertical:Bool = false):Void {
+	private function addLabel(item:DataSetItem, pos:Point, rel:LabelRelativePosition):Void {
 		// Add label
 		if (showLabelsX) {
 			var label:TextField = new TextField();
@@ -451,23 +460,37 @@ class Grid extends Chart {
 			
 			label.autoSize = TextFieldAutoSize.LEFT;
 			
+			switch(rel) {
+				case top:
+					label.x = -label.width / 2;
+					label.y = -label.height;
+				case bottom:
+					label.x = -label.width / 2;
+					label.y = 0;
+				case left:
+					label.x = -label.width;
+					label.y = -label.height / 2;
+				case right:
+					label.x = 0;
+					label.y = -label.height / 2;
+				case center:
+					label.x = -label.width / 2;
+					label.y = -label.height / 2;
+				case dist(x, y):
+					label.x = x;
+					label.y = y;
+			}
 			
 			switch(this.xLabelPosition) {
 				case LabelPosition.axis: // Done
-					label.x = pos.x - label.width/2;
+					label.x += pos.x;
 					label.y = Grid.Y + Grid.HEIGHT;
 				case LabelPosition.point:
-					if (vertical) { // Done
-						label.x = pos.x - label.width/2;
-						label.y = pos.y - label.height;
-					} else { // Done
-						label.x = pos.x;
-						label.y = pos.y - label.height / 2;
-					}
+					label.x += pos.x;
+					label.y += pos.y;
 			}
-			
-			
 			addChild(label);
+			
 		} if (showLabelsY) {
 			var label:TextField = new TextField();
 			label.selectable = false;
@@ -481,18 +504,34 @@ class Grid extends Chart {
 			
 			label.autoSize = TextFieldAutoSize.LEFT;
 			
+			switch(rel) {
+				case top:
+					label.x = -label.width / 2;
+					label.y = -label.height;
+				case bottom:
+					label.x = -label.width / 2;
+					label.y = 0;
+				case left:
+					label.x = -label.width;
+					label.y = -label.height / 2;
+				case right:
+					label.x = 0;
+					label.y = -label.height / 2;
+				case center:
+					label.x = -label.width / 2;
+					label.y = -label.height / 2;
+				case dist(x, y):
+					label.x = x;
+					label.y = y;
+			}
+			
 			switch(this.yLabelPosition) {
 				case LabelPosition.axis: // Done
 					label.x = Grid.X - label.width;
-					label.y = pos.y - label.height / 2;
+					label.y += pos.y;
 				case LabelPosition.point:
-					if (vertical) {
-						label.x = pos.x - label.width / 2;
-						label.y = pos.y - label.height;
-					} else {
-						label.x = pos.x;
-						label.y = pos.y - label.height / 2;
-					}
+					label.x += pos.x;
+					label.y += pos.y;
 			}
 			
 			addChild(label);
@@ -567,8 +606,5 @@ class Grid extends Chart {
 		}
 	}
 	
-	private function calculateLimits():Void {
-		trace('limits');
-	}
-	
+	private function calculateLimits():Void { }	
 }

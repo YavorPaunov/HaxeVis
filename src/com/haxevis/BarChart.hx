@@ -11,6 +11,7 @@ class BarChart extends Grid implements IBars {
 	
 	public function new (data:DataSet) {
 		super();
+		
 		this.data = data;
 		this.vertical = false;
 		
@@ -46,7 +47,14 @@ class BarChart extends Grid implements IBars {
 			}
 			graphics.endFill();
 			
-			addLabel(item, pos, this.vertical);
+			var relPos:LabelRelativePosition;
+			if (this.vertical) {
+				relPos = top;
+			} else {
+				relPos = right;
+			}
+			
+			addLabel(item, pos, relPos);
 		}
 	}
 	

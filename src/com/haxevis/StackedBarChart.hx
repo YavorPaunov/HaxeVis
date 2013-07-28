@@ -42,7 +42,15 @@ class StackedBarChart extends Grid implements IBars {
 						ty -= cast(data.items[k], DataSet).items[i].y * this.ratio.y;
 					}
 					graphics.drawRect(pos.x - width / 2, ty, width, height);
-					addLabel(item, new Point(pos.x, ty + height), this.vertical);
+					
+					var relPos:LabelRelativePosition;
+					if (this.vertical) {
+						relPos = top;
+					} else {
+						relPos = right;
+					}
+					
+					addLabel(item, new Point(pos.x, ty + height), relPos);
 				} else {
 					
 					width = pos.x - bottom.x;
@@ -54,11 +62,18 @@ class StackedBarChart extends Grid implements IBars {
 					}
 					
 					graphics.drawRect(tx, pos.y - height / 2, width, height);
-					addLabel(item, new Point(tx+width, pos.y), this.vertical);
+					
+					var relPos:LabelRelativePosition;
+					if (this.vertical) {
+						relPos = top;
+					} else {
+						relPos = right;
+					}
+					
+					addLabel(item, new Point(tx+width, pos.y), relPos);
 				}
 				graphics.endFill();
-				
-				
+	
 			}
 		}
 	}

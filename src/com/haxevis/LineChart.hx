@@ -11,13 +11,11 @@ class LineChart extends Grid {
 	 * @param  intervalInd The interval between the values of the independent variable
 	 */
 	public function new (data:DataSet) {
+		super();
+		
 		this.data = data;
 		
-		var gridMin:Point = new Point(data.min(Axis.x), data.min(Axis.y));
-		var gridMax:Point = new Point(data.max(Axis.x), data.max(Axis.y));
-		var interval:Point = new Point((gridMax.x - gridMin.x),  (gridMax.y - gridMin.y));
-		
-		super();
+		calculateLimits();
 	}
 
 	override private function draw():Void {
@@ -41,8 +39,24 @@ class LineChart extends Grid {
 				graphics.beginFill(item.color);
 				graphics.drawCircle(pointTo.x, pointTo.y, 3);
 				graphics.endFill();
+				
+				addLabel(item, pointTo, top);
 			}
+			
 		}
+	}
+	
+	override private function calculateLimits():Void {
+		super.calculateLimits();
+		
+		var gridMin:Point = new Point(data.min(Axis.x), Math.min(0, data.min(Axis.y)));
+		var gridMax:Point = new Point(data.max(Axis.x), data.max(Axis.y) + this.data.avg(Axis.y));
+		
+		this.xBottom = gridMin.x;
+		this.yBottom = gridMin.y;
+		
+		this.xTop = gridMax.x;
+		this.yTop = gridMax.y;
 	}
 
 }
