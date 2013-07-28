@@ -7,20 +7,49 @@ import flash.geom.Point;
 class StackedBarChart extends Grid implements IBars {
 
 	public var vertical:Bool;
-	public var barThickness:Float;
 	
 	public function new (data:DataSet) {
-
+		super();
 		this.data = data;
 		
 		this.vertical = false;
-		this.barThickness = 1;
+			
+		var sums:Array<Float> = [];
+		for (i in 0...data.items.length) {
+			var subData:DataSet = cast data.items[i];
+			
+			for (j in 0...subData.items.length) {
+				var item = subData.items[j];
+				if (sums.length <= j) {
+					sums.push(0);
+				}
+				
+				sums[j] += this.vertical ? item.x : item.y;
+			}
+		}
 		
-		var	gridMin:Point = new Point(this.data.min(Axis.x), this.data.min(Axis.y));
-		var	gridMax:Point = new Point(this.data.max(Axis.x) , this.data.max(Axis.y));
-		var	interval:Point = new Point((gridMax.x - gridMin.x) / 5,  (gridMax.y - gridMin.y) / 5);
+		var maxSum:Float = 0;
+		for (sum in sums) {
+			maxSum = Math.max(maxSum, sum);
+		}
 		
-		super(gridMax.x, gridMin.x, interval.x, gridMax.y, gridMin.y, interval.y);
+		var	gridMin:Point = new Point(Math.min(0, this.data.min(Axis.x)), Math.min(0, this.data.min(Axis.y)));
+		var	gridMax:Point;
+		
+		var firstSet:DataSet = cast data.items[0];
+		
+		if (this.vertical) {
+			gridMax = new Point(maxSum, this.data.max(Axis.y) + firstSet.items[0].y);
+		} else {
+			gridMax = new Point(this.data.max(Axis.x) + firstSet.items[0].x, maxSum);
+		}
+		
+		this.xTop = gridMax.x;
+		this.yTop = gridMax.y;
+		
+		this.xBottom = gridMin.x;
+		this.yBottom = gridMin.y;
+		
 	}
 
 	override private function draw(){
@@ -28,48 +57,47 @@ class StackedBarChart extends Grid implements IBars {
 		
 		for (j in 0...this.data.items.length) {
 			var items:DataSet = cast this.data.items[j];
+			
 			for (i in 0...items.items.length) {
-				
 				var item:DataSetItem = items.items[i];
 				var pos:Point = toGridPoint(new Point(item.x, item.y)); 
 				
 				var bottom:Point = toGridPoint(new Point(Math.max(this.xBottom, 0), Math.max(this.yBottom, 0)));
 				
-				graphics.lineStyle(1, 0x1a1a1a);
-				graphics.beginFill(item.color);
+				graphics.lineStyle(this.chartGraphics.line.thickness, 0x1a1a1a, this.chartGraphics.line.alpha);
+				graphics.beginFill(item.color, this.chartGraphics.fill.alpha);
 				
 				var height:Float;
 				var width:Float;
 				if (this.vertical) {
 					
 					height = pos.y - bottom.y;
-					width = barThickness;
+					width = this.chartGraphics.fill.thickness;
 					
 					var ty:Float = bottom.y;
-					if (j > 0) {
-						var prev:DataSet = cast this.data.items[j-1];
-						var prevPos:Point = toGridPoint(new Point(prev.items[i].x, prev.items[i].y));
-						ty = prevPos.y;
+					for (k in 0...j) {
+						ty -= cast(data.items[k], DataSet).items[i].y * this.ratio.y;
 					}
-					graphics.drawRect(pos.x - width/2, ty, width, height);
+					graphics.drawRect(pos.x - width / 2, ty, width, height);
+					addLabel(item, new Point(pos.x, ty + height));
 				} else {
 					
-					height = barThickness;
 					width = pos.x - bottom.x;
+					height = this.chartGraphics.fill.thickness;
 					
-					var tx:Float = bottom.x;
-					if (j > 0) {
-						var prev:DataSet = cast this.data.items[j-1];
-						var prevPos:Point = toGridPoint(new Point(prev.items[i].x, prev.items[i].y));
-						tx = prevPos.x;
+					var tx = bottom.x;
+					for (k in 0...j) {
+						tx += cast(data.items[k], DataSet).items[i].x * this.ratio.x;
 					}
+					
 					graphics.drawRect(tx, pos.y - height / 2, width, height);
+					addLabel(item, new Point(tx+width, pos.y));
 				}
 				graphics.endFill();
 				
+				
 			}
 		}
-		
 	}
 
 }

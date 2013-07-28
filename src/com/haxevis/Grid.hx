@@ -421,6 +421,57 @@ class Grid extends Chart {
 		graphics.lineStyle();
 	}
 
+	private function addLabel(item:DataSetItem, pos:Point):Void {		
+		// Add label
+		if (showLabelsX) {
+			var label:TextField = new TextField();
+			label.selectable = false;
+			
+			switch(this.xLabelText) {
+				case LabelText.name:
+					label.text = item.name;
+				case LabelText.value:
+					label.text = Std.string(item.x);
+			}
+			
+			label.autoSize = TextFieldAutoSize.LEFT;
+			label.x = pos.x - label.width/2;
+			
+			switch(this.xLabelPosition) {
+				case LabelPosition.axis:
+					label.y = Grid.Y + Grid.HEIGHT;
+				case LabelPosition.point:
+					label.y = pos.y;
+			}
+			
+			
+			addChild(label);
+		} if (showLabelsY) {
+			var label:TextField = new TextField();
+			label.selectable = false;
+			
+			switch(this.yLabelText) {
+				case LabelText.name:
+					label.text = item.name;
+				case LabelText.value:
+					label.text = Std.string(item.y);
+			}
+			
+			label.autoSize = TextFieldAutoSize.LEFT;
+			
+			switch(this.yLabelPosition) {
+				case LabelPosition.axis:
+					label.x = Grid.X - label.width;
+					label.y = pos.y - label.height / 2;
+				case LabelPosition.point:
+					label.x = pos.x;
+					label.y = pos.y;
+			}
+			
+			addChild(label);
+		}
+	}
+	
 	private function toGridPoint(p:Point):Point {
 		var x:Float = X, y:Float = Y;
 		
