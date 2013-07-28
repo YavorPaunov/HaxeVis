@@ -18,15 +18,11 @@ class GroupedBarChart extends Grid {
 	private var _step:Float;
 	private var _intervalInd:Float;
 	
-	
-	
 	public function new (data:DataSet, vertical:Bool, minInd:Float=1, intervalInd:Float=1) {
-
 		_data = data;
 		_showLegend = false;
 		_vertical = vertical;
 		_intervalInd = intervalInd;
-		
 		
 		var gridMin:Point;
 		var gridMax:Point;

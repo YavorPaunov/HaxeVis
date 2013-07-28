@@ -11,45 +11,9 @@ class StackedBarChart extends Grid implements IBars {
 	public function new (data:DataSet) {
 		super();
 		this.data = data;
-		
 		this.vertical = false;
-			
-		var sums:Array<Float> = [];
-		for (i in 0...data.items.length) {
-			var subData:DataSet = cast data.items[i];
-			
-			for (j in 0...subData.items.length) {
-				var item = subData.items[j];
-				if (sums.length <= j) {
-					sums.push(0);
-				}
-				
-				sums[j] += this.vertical ? item.x : item.y;
-			}
-		}
 		
-		var maxSum:Float = 0;
-		for (sum in sums) {
-			maxSum = Math.max(maxSum, sum);
-		}
-		
-		var	gridMin:Point = new Point(Math.min(0, this.data.min(Axis.x)), Math.min(0, this.data.min(Axis.y)));
-		var	gridMax:Point;
-		
-		var firstSet:DataSet = cast data.items[0];
-		
-		if (this.vertical) {
-			gridMax = new Point(maxSum, this.data.max(Axis.y) + firstSet.items[0].y);
-		} else {
-			gridMax = new Point(this.data.max(Axis.x) + firstSet.items[0].x, maxSum);
-		}
-		
-		this.xTop = gridMax.x;
-		this.yTop = gridMax.y;
-		
-		this.xBottom = gridMin.x;
-		this.yBottom = gridMin.y;
-		
+		calculateLimits();
 	}
 
 	override private function draw(){
@@ -70,7 +34,6 @@ class StackedBarChart extends Grid implements IBars {
 				var height:Float;
 				var width:Float;
 				if (this.vertical) {
-					
 					height = pos.y - bottom.y;
 					width = this.chartGraphics.fill.thickness;
 					
@@ -79,7 +42,7 @@ class StackedBarChart extends Grid implements IBars {
 						ty -= cast(data.items[k], DataSet).items[i].y * this.ratio.y;
 					}
 					graphics.drawRect(pos.x - width / 2, ty, width, height);
-					addLabel(item, new Point(pos.x, ty + height));
+					addLabel(item, new Point(pos.x, ty + height), this.vertical);
 				} else {
 					
 					width = pos.x - bottom.x;
@@ -91,13 +54,52 @@ class StackedBarChart extends Grid implements IBars {
 					}
 					
 					graphics.drawRect(tx, pos.y - height / 2, width, height);
-					addLabel(item, new Point(tx+width, pos.y));
+					addLabel(item, new Point(tx+width, pos.y), this.vertical);
 				}
 				graphics.endFill();
 				
 				
 			}
 		}
+	}
+	
+	override private function calculateLimits():Void {
+		super.calculateLimits();
+		var sums:Array<Float> = [];
+		for (i in 0...data.items.length) {
+			var subData:DataSet = cast data.items[i];
+			
+			for (j in 0...subData.items.length) {
+				var item = subData.items[j];
+				if (sums.length <= j) {
+					sums.push(0);
+				}
+				
+				sums[j] += this.vertical ? item.y : item.x;
+			}
+		}
+		
+		var maxSum:Float = 0;
+		for (sum in sums) {
+			maxSum = Math.max(maxSum, sum);
+		}
+		
+		var	gridMin:Point = new Point(Math.min(0, this.data.min(Axis.x)), Math.min(0, this.data.min(Axis.y)));
+		var	gridMax:Point;
+		
+		var firstSet:DataSet = cast data.items[0];
+		
+		if (this.vertical) {
+			gridMax = new Point(this.data.max(Axis.x) + firstSet.items[0].x, maxSum + data.avg(Axis.y));
+		} else {
+			gridMax = new Point(maxSum + data.avg(Axis.x), this.data.max(Axis.y) + firstSet.items[0].y);
+		}
+		
+		this.xTop = gridMax.x;
+		this.yTop = gridMax.y;
+		
+		this.xBottom = gridMin.x;
+		this.yBottom = gridMin.y;
 	}
 
 }

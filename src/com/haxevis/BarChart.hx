@@ -14,27 +14,7 @@ class BarChart extends Grid implements IBars {
 		this.data = data;
 		this.vertical = false;
 		
-		var	gridMin:Point;
-		var	gridMax:Point;
-		var	interval:Point;
-
-		if (vertical) {
-			gridMin = new Point(Math.min(0, this.data.min(Axis.x)), Math.min(0, this.data.min(Axis.y)));
-			gridMax = new Point(this.data.max(Axis.x), this.data.max(Axis.y));
-			gridMax.x += data.items[0].x;
-			
-		} else {
-			gridMin = new Point(Math.min(0, this.data.min(Axis.x)), Math.min(0, this.data.min(Axis.y)));
-			gridMax = new Point(this.data.max(Axis.x), this.data.max(Axis.y));
-			gridMax.y += data.items[0].y;
-		}
-		
-		this.xTop = gridMax.x;
-		this.yTop = gridMax.y;
-		
-		this.xBottom = gridMin.x;
-		this.yBottom = gridMin.y;
-		
+		calculateLimits();
 	}
 
 	override private function draw():Void {
@@ -66,7 +46,7 @@ class BarChart extends Grid implements IBars {
 			}
 			graphics.endFill();
 			
-			addLabel(item, pos);
+			addLabel(item, pos, this.vertical);
 		}
 	}
 	
@@ -78,6 +58,33 @@ class BarChart extends Grid implements IBars {
 			ticksX.push(item.x);
 			ticksY.push(item.y);
 		}		
+	}
+	
+	override private function calculateLimits():Void {
+		super.calculateLimits();
+		
+		var	gridMin:Point;
+		var	gridMax:Point;
+		var	interval:Point;
+
+		if (vertical) {
+			gridMin = new Point(Math.min(0, this.data.min(Axis.x)), Math.min(0, this.data.min(Axis.y)));
+			gridMax = new Point(this.data.max(Axis.x), this.data.max(Axis.y));
+			gridMax.x += data.items[0].x;
+			gridMax.y += data.avg(Axis.y);
+			
+		} else {
+			gridMin = new Point(Math.min(0, this.data.min(Axis.x)), Math.min(0, this.data.min(Axis.y)));
+			gridMax = new Point(this.data.max(Axis.x), this.data.max(Axis.y));
+			gridMax.y += data.items[0].y;
+			gridMax.x += data.avg(Axis.x);
+		}
+		
+		this.xTop = gridMax.x;
+		this.yTop = gridMax.y;
+		
+		this.xBottom = gridMin.x;
+		this.yBottom = gridMin.y;
 	}
 		
 }

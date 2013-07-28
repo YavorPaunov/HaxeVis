@@ -242,6 +242,16 @@ class Grid extends Chart {
 		return this.yLabelText;
 	}
 	
+	@:isVar public var autoLimits(default, set):Bool;
+	
+	function set_autoLimits(value:Bool):Bool {
+		this.autoLimits = value;
+		if (this.autoLimits && this.autoRedraw) {
+			draw();
+		}
+		return this.autoLimits;
+	}
+	
 	private var ratio:Point;
 	public var autoRedraw:Bool;
 	
@@ -298,6 +308,7 @@ class Grid extends Chart {
 		this.xLabelText = LabelText.name;
 		this.yLabelText = LabelText.name;
 		
+		this.autoLimits = true;
 	}
 	
 	override private function draw():Void {
@@ -306,7 +317,11 @@ class Grid extends Chart {
 		while (numChildren > 0) {
 			removeChildAt(0);
 		}
-
+		
+		if (autoLimits) {
+			calculateLimits();
+		}
+		
 		var xDif:Float = this.xTop - this.xBottom;
 		var yDif:Float = this.yTop - this.yBottom;
 
@@ -421,7 +436,7 @@ class Grid extends Chart {
 		graphics.lineStyle();
 	}
 
-	private function addLabel(item:DataSetItem, pos:Point):Void {		
+	private function addLabel(item:DataSetItem, pos:Point, vertical:Bool = false):Void {
 		// Add label
 		if (showLabelsX) {
 			var label:TextField = new TextField();
@@ -435,13 +450,20 @@ class Grid extends Chart {
 			}
 			
 			label.autoSize = TextFieldAutoSize.LEFT;
-			label.x = pos.x - label.width/2;
+			
 			
 			switch(this.xLabelPosition) {
-				case LabelPosition.axis:
+				case LabelPosition.axis: // Done
+					label.x = pos.x - label.width/2;
 					label.y = Grid.Y + Grid.HEIGHT;
 				case LabelPosition.point:
-					label.y = pos.y;
+					if (vertical) { // Done
+						label.x = pos.x - label.width/2;
+						label.y = pos.y - label.height;
+					} else { // Done
+						label.x = pos.x;
+						label.y = pos.y - label.height / 2;
+					}
 			}
 			
 			
@@ -460,12 +482,17 @@ class Grid extends Chart {
 			label.autoSize = TextFieldAutoSize.LEFT;
 			
 			switch(this.yLabelPosition) {
-				case LabelPosition.axis:
+				case LabelPosition.axis: // Done
 					label.x = Grid.X - label.width;
 					label.y = pos.y - label.height / 2;
 				case LabelPosition.point:
-					label.x = pos.x;
-					label.y = pos.y;
+					if (vertical) {
+						label.x = pos.x - label.width / 2;
+						label.y = pos.y - label.height;
+					} else {
+						label.x = pos.x;
+						label.y = pos.y - label.height / 2;
+					}
 			}
 			
 			addChild(label);
@@ -538,6 +565,10 @@ class Grid extends Chart {
 			case Axis.z:
 				return;
 		}
+	}
+	
+	private function calculateLimits():Void {
+		trace('limits');
 	}
 	
 }
