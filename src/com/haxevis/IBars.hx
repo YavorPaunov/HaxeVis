@@ -6,5 +6,4 @@ package com.haxevis;
  */
 interface IBars {
 	public var vertical:Bool;
-	public var barThickness:Float;
 }
