@@ -47,14 +47,31 @@ class BarChart extends Grid implements IBars {
 			}
 			graphics.endFill();
 			
-			var relPos:LabelRelativePosition;
-			if (this.vertical) {
-				relPos = top;
-			} else {
-				relPos = right;
+			var xrel:LabelRelativePosition, yrel:LabelRelativePosition;
+			switch(this.xLabelPosition) {
+				case axis:
+					xrel = LabelRelativePosition.bottom;
+				case point:
+					if (this.vertical) {
+						xrel = top;
+					} else {
+						xrel = right;
+					}
 			}
 			
-			addLabel(item, pos, relPos);
+			switch(this.yLabelPosition) {
+				case axis:
+					yrel = LabelRelativePosition.left;
+				case point:
+					if (this.vertical) {
+						yrel = top;
+					} else {
+						yrel = right;
+					}
+			}
+			
+			
+			addLabel(item, pos, xrel, yrel);
 		}
 	}
 	

@@ -445,7 +445,7 @@ class Grid extends Chart {
 		graphics.lineStyle();
 	}
 
-	private function addLabel(item:DataSetItem, pos:Point, rel:LabelRelativePosition):Void {
+	private function addLabel(item:DataSetItem, pos:Point, xrel:LabelRelativePosition, yrel:LabelRelativePosition):Void {
 		// Add label
 		if (showLabelsX) {
 			var label:TextField = new TextField();
@@ -460,7 +460,7 @@ class Grid extends Chart {
 			
 			label.autoSize = TextFieldAutoSize.LEFT;
 			
-			switch(rel) {
+			switch(xrel) {
 				case top:
 					label.x = -label.width / 2;
 					label.y = -label.height;
@@ -481,12 +481,15 @@ class Grid extends Chart {
 					label.y = y;
 			}
 			
+			label.x += pos.x;
+			//label.y += pos.y;
+			
 			switch(this.xLabelPosition) {
 				case LabelPosition.axis: // Done
-					label.x += pos.x;
-					label.y = Grid.Y + Grid.HEIGHT;
+					//label.x += Grid.X;
+					label.y += Grid.Y + Grid.HEIGHT;
 				case LabelPosition.point:
-					label.x += pos.x;
+					//label.x += pos.x;
 					label.y += pos.y;
 			}
 			addChild(label);
@@ -504,7 +507,7 @@ class Grid extends Chart {
 			
 			label.autoSize = TextFieldAutoSize.LEFT;
 			
-			switch(rel) {
+			switch(yrel) {
 				case top:
 					label.x = -label.width / 2;
 					label.y = -label.height;
@@ -525,13 +528,16 @@ class Grid extends Chart {
 					label.y = y;
 			}
 			
+			//label.x += pos.x;
+			label.y += pos.y;
+			
 			switch(this.yLabelPosition) {
-				case LabelPosition.axis: // Done
-					label.x = Grid.X - label.width;
-					label.y += pos.y;
+				case LabelPosition.axis:
+					label.x += Grid.X;
+					//label.y += pos.y;
 				case LabelPosition.point:
 					label.x += pos.x;
-					label.y += pos.y;
+					//label.y += pos.y;
 			}
 			
 			addChild(label);

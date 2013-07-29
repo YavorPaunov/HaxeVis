@@ -50,7 +50,7 @@ class StackedBarChart extends Grid implements IBars {
 						relPos = right;
 					}
 					
-					addLabel(item, new Point(pos.x, ty + height), relPos);
+					addLabel(item, new Point(pos.x, ty + height), relPos, relPos);
 				} else {
 					
 					width = pos.x - bottom.x;
@@ -70,7 +70,7 @@ class StackedBarChart extends Grid implements IBars {
 						relPos = right;
 					}
 					
-					addLabel(item, new Point(tx+width, pos.y), relPos);
+					addLabel(item, new Point(tx+width, pos.y), relPos, relPos);
 				}
 				graphics.endFill();
 	

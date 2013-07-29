@@ -2,14 +2,9 @@ package com.haxevis;
 import com.haxevis.DataSetItem;
 import flash.geom.Point;
 
+using com.haxevis.Grid;
 class LineChart extends Grid {
 
-	/**
-	 * 
-	 * @param  data A DataSet containing data for the 
-	 * @param  minInd The lowest value of the independent variable (x in this case)
-	 * @param  intervalInd The interval between the values of the independent variable
-	 */
 	public function new (data:DataSet) {
 		super();
 		
@@ -40,7 +35,23 @@ class LineChart extends Grid {
 				graphics.drawCircle(pointTo.x, pointTo.y, 3);
 				graphics.endFill();
 				
-				addLabel(item, pointTo, top);
+				
+				var xrel:LabelRelativePosition, yrel:LabelRelativePosition;
+				switch(this.xLabelPosition) {
+					case LabelPosition.axis:
+						xrel = bottom;
+					case LabelPosition.point:
+						xrel = top;
+				}
+				
+				switch(this.yLabelPosition) {
+					case LabelPosition.axis:
+						yrel = left;
+					case LabelPosition.point:
+						yrel = top;
+				}
+				
+				addLabel(item, pointTo, xrel, yrel);
 			}
 			
 		}
