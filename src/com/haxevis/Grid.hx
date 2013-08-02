@@ -45,18 +45,7 @@ enum LabelRelativePosition {
 }
 	
 class Grid extends Chart {
-	
-	// Gap X and Y gaps between the edge of the sprite and the beginning of the chart. That is where the tick labels will be.
-	// Ignore for now.
-	// TODO: Calculate this dynamically.
-	public var paddingLeft:Float = 0;
-	public var paddingTop:Float = 0;
-	
-	private var gridX:Float;
-	private var gridY:Float;
-	private var gridW:Float;
-	private var gridH:Float;
-	
+		
 	private var ticksXArea:Sprite;
 	private var ticksYArea:Sprite;
 	
@@ -287,7 +276,7 @@ class Grid extends Chart {
 			borders: {
 				thickness:0,
 				alpha:0,
-				color:0
+				color:0x9A9A9A
 			}
 		}
 		
@@ -310,15 +299,8 @@ class Grid extends Chart {
 	}
 	
 	override private function draw():Void {
-		graphics.clear();
+		super.draw();
 		
-		while (numChildren > 0) {
-			removeChildAt(0);
-		}
-		
-		if (autoLimits) {
-			calculateLimits();
-		}
 		
 		var xDif:Float = this.xTop - this.xBottom;
 		var yDif:Float = this.yTop - this.yBottom;
@@ -342,23 +324,23 @@ class Grid extends Chart {
 			yZeroPos = this.paddingTop + h;
 		}
 		
-		if(this.showTicksX) {
-			for (tickX in this.ticksX) {
-				var targetX:Float = tickX * this.ratio.x + xZeroPos; 
-				var targetY:Float;
-				targetY = this.paddingTop + h; //yZeroPos - lineY * this.ratio.y;
-				
-				// Add ticks			
-				graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
-				graphics.moveTo(targetX, targetY);
-				graphics.lineTo(targetX, targetY+4);
-							
-				graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
-				graphics.moveTo(targetX, this.paddingTop);
-				graphics.lineTo(targetX, this.paddingTop + h);
-				
-				graphics.lineStyle();
-				
+		
+		for (tickX in this.ticksX) {
+			var targetX:Float = tickX * this.ratio.x + xZeroPos; 
+			var targetY:Float;
+			targetY = this.paddingTop + h; //yZeroPos - lineY * this.ratio.y;
+			
+			// Add ticks			
+			graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
+			graphics.moveTo(targetX, targetY);
+			graphics.lineTo(targetX, targetY+4);
+						
+			graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
+			graphics.moveTo(targetX, this.paddingTop);
+			graphics.lineTo(targetX, this.paddingTop + h);
+			
+			graphics.lineStyle();
+			if(this.showTicksX) {
 				var valueStringRaw:String = Std.string(tickX);
 				var floatingPointIndex:Int = valueStringRaw.indexOf(".");
 				var valueString:String;
@@ -376,28 +358,29 @@ class Grid extends Chart {
 				valueField.x = targetX - valueField.width / 2;
 				valueField.y = targetY + 2;
 				addChild(valueField);
-				
+			
 			}
 		}
 		
-		if(showTicksY) {
-			for (tickY in this.ticksY) {
-				var targetX:Float;
-				
-				targetX = this.paddingLeft; //xZeroPos + lineX * this.ratio.x;
-				
-				// Add ticks
-				var targetY:Float = yZeroPos - tickY * this.ratio.y;
-				
-				graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
-				graphics.moveTo(targetX, targetY);
-				graphics.lineTo(targetX-4, targetY);
-				graphics.lineStyle();
-				
-				graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
-				graphics.moveTo(this.paddingLeft, targetY);
-				graphics.lineTo(this.paddingLeft + w, targetY);				
-				
+		
+		for (tickY in this.ticksY) {
+			var targetX:Float;
+			
+			targetX = this.paddingLeft; //xZeroPos + lineX * this.ratio.x;
+			
+			// Add ticks
+			var targetY:Float = yZeroPos - tickY * this.ratio.y;
+			
+			graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
+			graphics.moveTo(targetX, targetY);
+			graphics.lineTo(targetX-4, targetY);
+			graphics.lineStyle();
+			
+			graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
+			graphics.moveTo(this.paddingLeft, targetY);
+			graphics.lineTo(this.paddingLeft + w, targetY);
+			
+			if(showTicksY) {
 				var valueString:String;
 				var valueStringRaw:String = Std.string(tickY);
 				var floatingPointIndex:Int = valueStringRaw.indexOf(".");
@@ -430,7 +413,7 @@ class Grid extends Chart {
 		
 		// Draw borders
 		graphics.lineStyle(gridGraphics.borders.thickness, gridGraphics.borders.color, gridGraphics.borders.alpha);
-		graphics.drawRect(this.paddingLeft, this.paddingTop, w - this.paddingLeft, h - this.paddingTop);
+		graphics.drawRect(0, 0, w + this.paddingRight + this.paddingLeft, h + this.paddingBottom + this.paddingTop);
 		graphics.lineStyle();
 	}
 	

@@ -10,6 +10,11 @@ import flash.display.Sprite;
 using ChartElement.ChartElementStates;
 class Chart extends Sprite {
 	
+	public var paddingLeft:Float = 20;
+	public var paddingTop:Float = 10;
+	public var paddingRight:Float = 150;
+	public var paddingBottom:Float = 20;
+	
 	public var w:Float;
 	public var h:Float;
 		
@@ -30,6 +35,9 @@ class Chart extends Sprite {
 	@:isVar public var showLegend(default, set):Bool;
 	function set_showLegend(value:Bool):Bool {
 		this.showLegend = value;
+		if (autoRedraw) {
+			draw();
+		}
 		return this.showLegend;
 	}
 	
@@ -37,10 +45,29 @@ class Chart extends Sprite {
 		super();
 	}
 	
-	private function draw():Void {}
+	private function draw():Void {
+		graphics.clear();
+		
+		while (numChildren > 0) {
+			removeChildAt(0);
+		}
+		
+		addLegend();
+	}
 	
 	public function redraw():Void {
 		draw();
+	}
+	
+	public function addLegend():Void {
+		
+		if(legend == null) {
+			legend = new Legend(data);
+		}
+		
+		legend.x = this.paddingLeft + this.w + 25;
+		legend.y = this.paddingTop;
+		addChild(legend);
 	}
 	
 }

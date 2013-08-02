@@ -19,7 +19,7 @@ class LineChart extends Grid {
 				var item:Float = items[j];
 				var itemx:Float = j;
 				
-				var label = labels[j % labels.length];
+				var label = labels[i % labels.length];
 				
 				set.items.push(new DataSetItem(itemx, item, 0, Std.string(label), colors[i % colors.length]));
 			}
@@ -36,6 +36,7 @@ class LineChart extends Grid {
 					width:0.5,
 					alpha:1
 				},
+				
 				hovered: { 
 					fillColor:item,
 					strokeColor:item,
@@ -43,6 +44,7 @@ class LineChart extends Grid {
 					width:0.5,
 					alpha:1
 				},
+				
 				selected: {
 					fillColor:item,
 					strokeColor:item,
@@ -54,27 +56,34 @@ class LineChart extends Grid {
 		} else {
 			this.chartElementStates = chartElementStates;
 		}
-		this.gridGraphics.axislines.alpha = 1;
-		this.gridGraphics.axislines.thickness = 1;
-		
-		this.showTicksY = true;
+				
+		this.showTicksY = false;
 		this.gridGraphics.ticks.alpha = 1;
 		this.gridGraphics.ticks.thickness = 1;
 		
 		this.gridGraphics.gridlines.alpha = 1;
 		this.gridGraphics.gridlines.thickness = 1;
-		this.showLabelsX = true;
 		
 		this.gridGraphics.borders.alpha = 1;
 		this.gridGraphics.borders.thickness = 1;
 		
-				
+		this.showLabelsY = true;
+		
+		this.yLabelPosition = point;
+		this.yLabelText = value;
+		
 		calculateLimits();
 		distributeTicksDist(data.min(Axis.y), Axis.y);
+		distributeTicks(values.length, Axis.x);
 	}
 
 	override private function draw():Void {
 		super.draw();
+		
+		if (autoLimits) {
+			calculateLimits();
+		}
+		
 		for (j in 0...this.data.items.length) {
 			var items:DataSet = cast this.data.items[j];
 			for (i in 0...items.items.length) {
