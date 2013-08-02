@@ -47,12 +47,18 @@ enum LabelRelativePosition {
 class Grid extends Chart {
 	
 	// Gap X and Y gaps between the edge of the sprite and the beginning of the chart. That is where the tick labels will be.
+	// Ignore for now.
 	// TODO: Calculate this dynamically.
-	private static inline var X:Float = 25; 
-	private static inline var Y:Float = 25;
+	public var paddingLeft:Float = 0;
+	public var paddingTop:Float = 0;
 	
-	private static inline var HEIGHT:Float = 300;
-	private static inline var WIDTH:Float = 300;
+	private var gridX:Float;
+	private var gridY:Float;
+	private var gridW:Float;
+	private var gridH:Float;
+	
+	private var ticksXArea:Sprite;
+	private var ticksYArea:Sprite;
 	
 	public var gridGraphics:GridGraphics;
 	
@@ -149,28 +155,7 @@ class Grid extends Chart {
 		}
 		return this.yBottom;
 	}
-		
-	
-	@:isVar public var showGridY(default, set):Bool;
-	
-	function set_showGridY(value:Bool):Bool {
-		this.showGridY = value;
-		if (this.autoRedraw) {
-			draw();
-		}
-		return this.showGridY;
-	}
-	
-	@:isVar public var showGridX(default, set):Bool;
-	
-	function set_showGridX(value:Bool):Bool {
-		this.showGridX = value;
-		if (this.autoRedraw) {
-			draw();
-		}
-		return this.showGridX;
-	}
-	
+			
 	@:isVar public var showLabelsY(default, set):Bool;
 	
 	function set_showLabelsY(value:Bool):Bool {
@@ -262,17 +247,18 @@ class Grid extends Chart {
 	}
 	
 	private var ratio:Point;
-	public var autoRedraw:Bool;
 	
-	public function new() {
+	public function new(w:Float, h:Float) {
 		super();
 		
 		cacheAsBitmap = true;
+		
+		this.w = w;
+		this.h = h;
+		
+		// Establish default behaviour
 		this.autoTicks = false;
-		
-		this.showGridX = false;
-		this.showGridY = false;
-		
+				
 		this.lineX = 0;
 		this.lineY = 0;
 		
@@ -281,29 +267,32 @@ class Grid extends Chart {
 		
 		this.gridGraphics = {
 			ticks: {
-				thickness:1,
-				alpha:1,
+				thickness:0,
+				alpha:0,
 				color:0xAAAAAA
 			},
 			
 			gridlines: {
-				thickness:1,
-				alpha:1,
+				thickness:0,
+				alpha:0,
 				color:0xDEDEDE
 			},
 			
 			axislines: {
-				thickness:1,
-				alpha:1,
+				thickness:0,
+				alpha:0,
 				color:0x121212
 			},
 			
 			borders: {
-				thickness:1,
-				alpha:1,
+				thickness:0,
+				alpha:0,
 				color:0
 			}
 		}
+		
+		this.ticksXArea = new Sprite();
+		this.ticksYArea = new Sprite();
 		
 		this.showLabelsY = false;
 		this.showLabelsX = false;
@@ -334,40 +323,40 @@ class Grid extends Chart {
 		var xDif:Float = this.xTop - this.xBottom;
 		var yDif:Float = this.yTop - this.yBottom;
 
-		var xRatio:Float = WIDTH / xDif;
-		var yRatio:Float = HEIGHT / yDif;
+		var xRatio:Float = this.w / xDif;
+		var yRatio:Float = this.h / yDif;
 
 		this.ratio = new Point(xRatio, yRatio);
 		
 		var xZeroPos:Float;
 		if (this.xBottom < 0) {
-			xZeroPos = X - this.xBottom * xRatio;
+			xZeroPos = this.paddingLeft - this.xBottom * xRatio;
 		} else {
-			xZeroPos = X;
+			xZeroPos = this.paddingLeft;
 		}
 
 		var yZeroPos:Float;
 		if (this.yBottom < 0) {
-			yZeroPos = Y+HEIGHT + this.yBottom * yRatio;
+			yZeroPos = this.paddingTop + h + this.yBottom * yRatio;
 		} else {
-			yZeroPos = Y+HEIGHT;
+			yZeroPos = this.paddingTop + h;
 		}
 		
 		if(this.showTicksX) {
 			for (tickX in this.ticksX) {
 				var targetX:Float = tickX * this.ratio.x + xZeroPos; 
 				var targetY:Float;
-				targetY = Y + HEIGHT; //yZeroPos - lineY * this.ratio.y;
+				targetY = this.paddingTop + h; //yZeroPos - lineY * this.ratio.y;
+				
 				// Add ticks			
 				graphics.lineStyle(gridGraphics.ticks.thickness, gridGraphics.ticks.color, gridGraphics.ticks.alpha);
 				graphics.moveTo(targetX, targetY);
 				graphics.lineTo(targetX, targetY+4);
 							
-				if (this.showGridX) {
-					graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
-					graphics.moveTo(targetX, Y);
-					graphics.lineTo(targetX, Y + HEIGHT);
-				}
+				graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
+				graphics.moveTo(targetX, this.paddingTop);
+				graphics.lineTo(targetX, this.paddingTop + h);
+				
 				graphics.lineStyle();
 				
 				var valueStringRaw:String = Std.string(tickX);
@@ -379,6 +368,7 @@ class Grid extends Chart {
 				} else {
 					valueString = valueStringRaw;
 				}
+				
 				var valueField:TextField = new TextField();
 				valueField.selectable = false;
 				valueField.text = valueString;
@@ -386,6 +376,7 @@ class Grid extends Chart {
 				valueField.x = targetX - valueField.width / 2;
 				valueField.y = targetY + 2;
 				addChild(valueField);
+				
 			}
 		}
 		
@@ -393,7 +384,7 @@ class Grid extends Chart {
 			for (tickY in this.ticksY) {
 				var targetX:Float;
 				
-				targetX = X; //xZeroPos + lineX * this.ratio.x;
+				targetX = this.paddingLeft; //xZeroPos + lineX * this.ratio.x;
 				
 				// Add ticks
 				var targetY:Float = yZeroPos - tickY * this.ratio.y;
@@ -403,11 +394,9 @@ class Grid extends Chart {
 				graphics.lineTo(targetX-4, targetY);
 				graphics.lineStyle();
 				
-				if (this.showGridY) {
-					graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
-					graphics.moveTo(X, targetY);
-					graphics.lineTo(X + WIDTH, targetY);				
-				}
+				graphics.lineStyle(gridGraphics.gridlines.thickness, gridGraphics.gridlines.color, gridGraphics.gridlines.alpha);
+				graphics.moveTo(this.paddingLeft, targetY);
+				graphics.lineTo(this.paddingLeft + w, targetY);				
 				
 				var valueString:String;
 				var valueStringRaw:String = Std.string(tickY);
@@ -433,21 +422,46 @@ class Grid extends Chart {
 		
 		graphics.lineStyle(gridGraphics.axislines.thickness, gridGraphics.axislines.color, gridGraphics.axislines.alpha);
 		
-		graphics.moveTo(xZeroPos + lineX * this.ratio.x, Y);
-		graphics.lineTo(xZeroPos + lineX * this.ratio.x, Y + HEIGHT);
+		graphics.moveTo(xZeroPos + lineX * this.ratio.x, this.paddingTop);
+		graphics.lineTo(xZeroPos + lineX * this.ratio.x, this.paddingTop + h);
 		
-		graphics.moveTo(X, yZeroPos - lineY * this.ratio.y);
-		graphics.lineTo(X + WIDTH, yZeroPos - lineY * this.ratio.y);
+		graphics.moveTo(this.paddingLeft, yZeroPos - lineY * this.ratio.y);
+		graphics.lineTo(this.paddingTop + w, yZeroPos - lineY * this.ratio.y);
 		
 		// Draw borders
 		graphics.lineStyle(gridGraphics.borders.thickness, gridGraphics.borders.color, gridGraphics.borders.alpha);
-		graphics.drawRect(X, Y, WIDTH, HEIGHT);
+		graphics.drawRect(this.paddingLeft, this.paddingTop, w - this.paddingLeft, h - this.paddingTop);
 		graphics.lineStyle();
 	}
+	
+	
+	//private function addTicks(axis:Axis):Void {
+		//
+		//this.ticksXArea.graphics.clear();
+		//while (ticksXArea.numChildren > 0) {
+			//ticksXArea.removeChildAt(0);
+		//}
+		//
+		//this.ticksYArea.graphics.clear();
+		//while (ticksYArea.numChildren > 0) {
+			//ticksYArea.removeChildAt(0);
+		//}
+		//
+		//switch(axis) {
+			//case Axis.x:
+				//if (this.showTicksX) {
+					//
+				//}
+			//case Axis.y:
+				//
+			//default:
+				//return;
+		//}
+	//}
 
 	private function addLabel(item:DataSetItem, pos:Point, xrel:LabelRelativePosition, yrel:LabelRelativePosition):Void {
 		// Add label
-		if (showLabelsX) {
+		if (this.showLabelsX) {
 			var label:TextField = new TextField();
 			label.selectable = false;
 			
@@ -487,14 +501,14 @@ class Grid extends Chart {
 			switch(this.xLabelPosition) {
 				case LabelPosition.axis: // Done
 					//label.x += Grid.X;
-					label.y += Grid.Y + Grid.HEIGHT;
+					label.y += this.paddingTop + h;
 				case LabelPosition.point:
 					//label.x += pos.x;
 					label.y += pos.y;
 			}
 			addChild(label);
 			
-		} if (showLabelsY) {
+		} if (this.showLabelsY) {
 			var label:TextField = new TextField();
 			label.selectable = false;
 			
@@ -533,7 +547,7 @@ class Grid extends Chart {
 			
 			switch(this.yLabelPosition) {
 				case LabelPosition.axis:
-					label.x += Grid.X;
+					label.x += this.paddingLeft;
 					//label.y += pos.y;
 				case LabelPosition.point:
 					label.x += pos.x;
@@ -545,20 +559,20 @@ class Grid extends Chart {
 	}
 	
 	private function toGridPoint(p:Point):Point {
-		var x:Float = X, y:Float = Y;
+		var x:Float = this.paddingLeft, y:Float = this.paddingTop;
 		
-		x = X - this.xBottom * this.ratio.x;
+		x = this.paddingLeft - this.xBottom * this.ratio.x;
 		x += p.x * this.ratio.x;
 		
-		y = Y + HEIGHT + this.yBottom * this.ratio.y;
+		y = this.paddingTop + h + this.yBottom * this.ratio.y;
 		y -= p.y * this.ratio.y;
 		
 		return new Point(x, y);
 	}
 	
 	private function calculateTicks():Void {
-		ticksX = [0];
-		ticksY = [0];
+		ticksX = [];
+		ticksY = [];
 	}
 	
 	public function distributeTicks(numTicks:Int, axis:Axis):Void {

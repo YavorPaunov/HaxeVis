@@ -3,14 +3,74 @@ import com.haxevis.DataSetItem;
 import flash.geom.Point;
 
 using com.haxevis.Grid;
+using ChartElement.ChartElementStates;
 class LineChart extends Grid {
 
-	public function new (data:DataSet) {
-		super();
+	private var defaultColors:Array<Int>;
+	
+	public function new (w:Float, h:Float, values:Array<Array<Float>>, labels:Array<Dynamic>, colors:Array<Int>, ?chartElementStates:ChartElementStates) {
+		super(w, h);
 		
-		this.data = data;
+		this.data = new DataSet();
+		for (i in 0...values.length) {
+			var items:Array<Float> = values[i];
+			var set:DataSet = new DataSet();
+			for (j in 0...items.length) {
+				var item:Float = items[j];
+				var itemx:Float = j;
+				
+				var label = labels[j % labels.length];
+				
+				set.items.push(new DataSetItem(itemx, item, 0, Std.string(label), colors[i % colors.length]));
+			}
+			this.data.items.push(set);
+		}
 		
+		// Establish default behaviour
+		if (chartElementStates == null) {
+			this.chartElementStates = {
+				normal: {
+					fillColor:item,
+					strokeColor:item,
+					strokeThickness:1,
+					width:0.5,
+					alpha:1
+				},
+				hovered: { 
+					fillColor:item,
+					strokeColor:item,
+					strokeThickness:1,
+					width:0.5,
+					alpha:1
+				},
+				selected: {
+					fillColor:item,
+					strokeColor:item,
+					strokeThickness:1,
+					width:0.5,
+					alpha:1
+				}
+			}
+		} else {
+			this.chartElementStates = chartElementStates;
+		}
+		this.gridGraphics.axislines.alpha = 1;
+		this.gridGraphics.axislines.thickness = 1;
+		
+		this.showTicksY = true;
+		this.gridGraphics.ticks.alpha = 1;
+		this.gridGraphics.ticks.thickness = 1;
+		
+		this.gridGraphics.gridlines.alpha = 1;
+		this.gridGraphics.gridlines.thickness = 1;
+		this.showLabelsX = true;
+		
+		this.gridGraphics.borders.alpha = 1;
+		this.gridGraphics.borders.thickness = 1;
+		
+				
 		calculateLimits();
+		distributeTicksDist(data.min(Axis.y), Axis.y);
 	}
 
 	override private function draw():Void {
@@ -25,16 +85,16 @@ class LineChart extends Grid {
 					startPoint = toGridPoint(new Point(items.items[i - 1].x, items.items[i - 1].y));
 				}
 				
-				graphics.lineStyle(1, items.color);
+				graphics.lineStyle(this.chartElementStates.normal.strokeThickness, items.color);
 				graphics.moveTo(startPoint.x, startPoint.y);
 				
 				var pointTo:Point = toGridPoint(new Point(item.x, item.y));
 				graphics.lineTo(pointTo.x, pointTo.y);
 				
-				graphics.beginFill(item.color);
-				graphics.drawCircle(pointTo.x, pointTo.y, 3);
-				graphics.endFill();
-				
+				var element:ChartElement = new ChartElement(this.chartElementStates, item.color, circle(3));
+				element.x = pointTo.x;
+				element.y = pointTo.y;
+				addChild(element);
 				
 				var xrel:LabelRelativePosition, yrel:LabelRelativePosition;
 				switch(this.xLabelPosition) {
@@ -61,7 +121,7 @@ class LineChart extends Grid {
 		super.calculateLimits();
 		
 		var gridMin:Point = new Point(data.min(Axis.x), Math.min(0, data.min(Axis.y)));
-		var gridMax:Point = new Point(data.max(Axis.x), data.max(Axis.y) + this.data.avg(Axis.y));
+		var gridMax:Point = new Point(data.max(Axis.x), data.max(Axis.y) + this.data.min(Axis.y));
 		
 		this.xBottom = gridMin.x;
 		this.yBottom = gridMin.y;

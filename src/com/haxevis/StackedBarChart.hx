@@ -3,13 +3,15 @@ import com.haxevis.Grid;
 import com.haxevis.DataSetItem;
 import flash.geom.Point;
 
-
+using IBars.Orientation;
 class StackedBarChart extends Grid implements IBars {
-
+	
 	public var vertical:Bool;
+	public var orientation:Orientation;
 	
 	public function new (data:DataSet) {
 		super();
+		
 		this.data = data;
 		this.vertical = false;
 		
@@ -73,7 +75,6 @@ class StackedBarChart extends Grid implements IBars {
 					addLabel(item, new Point(tx+width, pos.y), relPos, relPos);
 				}
 				graphics.endFill();
-	
 			}
 		}
 	}
