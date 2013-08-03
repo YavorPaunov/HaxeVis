@@ -5,6 +5,7 @@ import flash.errors.Error;
 import flash.geom.Point;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
+import flash.text.TextFormat;
 
 using com.haxevis.DataSetItem;
 /**
@@ -165,6 +166,16 @@ class Grid extends Chart {
 		return this.showLabelsX;
 	}
 	
+	@:isVar public var showLabelsZ(default, set):Bool;
+	
+	function set_showLabelsZ(value:Bool):Bool {
+		this.showLabelsZ = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.showLabelsZ;
+	}
+	
 	@:isVar public var showTicksY(default, set):Bool;
 	
 	function set_showTicksY(value:Bool):Bool {
@@ -205,6 +216,16 @@ class Grid extends Chart {
 		return this.yLabelPosition;
 	}
 	
+	@:isVar public var zLabelPosition(default, set):LabelPosition;
+	
+	function set_zLabelPosition(value:LabelPosition):LabelPosition {
+		this.zLabelPosition = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.zLabelPosition;
+	}
+	
 	@:isVar public var xLabelText(default, set):LabelText;
 	
 	function set_xLabelText(value:LabelText):LabelText {
@@ -223,6 +244,16 @@ class Grid extends Chart {
 			draw();
 		}
 		return this.yLabelText;
+	}
+	
+	@:isVar public var zLabelText(default, set):LabelText;
+	
+	function set_zLabelText(value:LabelText):LabelText {
+		this.zLabelText = value;
+		if (this.autoRedraw) {
+			draw();
+		}
+		return this.zLabelText;
 	}
 	
 	@:isVar public var autoLimits(default, set):Bool;
@@ -311,18 +342,18 @@ class Grid extends Chart {
 		this.ratio = new Point(xRatio, yRatio);
 		
 		var xZeroPos:Float;
-		if (this.xBottom < 0) {
-			xZeroPos = this.paddingLeft - this.xBottom * xRatio;
-		} else {
-			xZeroPos = this.paddingLeft;
-		}
+		//if (this.xBottom > 0) {
+		xZeroPos = this.paddingLeft - this.xBottom * xRatio;
+		//} else {
+			//xZeroPos = this.paddingLeft;
+		//}
 
 		var yZeroPos:Float;
-		if (this.yBottom < 0) {
-			yZeroPos = this.paddingTop + h + this.yBottom * yRatio;
-		} else {
-			yZeroPos = this.paddingTop + h;
-		}
+		//if (this.yBottom < 0) {
+		yZeroPos = this.paddingTop + h + this.yBottom * yRatio;
+		//} else {
+			//yZeroPos = this.paddingTop + h;
+		//}
 		
 		
 		for (tickX in this.ticksX) {
@@ -444,10 +475,10 @@ class Grid extends Chart {
 
 	private function addLabel(item:DataSetItem, pos:Point, xrel:LabelRelativePosition, yrel:LabelRelativePosition):Void {
 		// Add label
+		
 		if (this.showLabelsX) {
 			var label:TextField = new TextField();
 			label.selectable = false;
-			
 			switch(this.xLabelText) {
 				case LabelText.name:
 					label.text = item.name;
@@ -491,7 +522,8 @@ class Grid extends Chart {
 			}
 			addChild(label);
 			
-		} if (this.showLabelsY) {
+		} 
+		if (this.showLabelsY) {
 			var label:TextField = new TextField();
 			label.selectable = false;
 			
@@ -536,6 +568,47 @@ class Grid extends Chart {
 					label.x += pos.x;
 					//label.y += pos.y;
 			}
+			label.mouseEnabled = false;
+			addChild(label);
+		}
+		
+		if (this.showLabelsZ) {
+			var label:TextField = new TextField();
+			label.selectable = false;
+			
+			switch(this.zLabelText) {
+				case LabelText.name:
+					label.text = item.name;
+				case LabelText.value:
+					label.text = Std.string(item.z);
+			}
+			
+			label.autoSize = TextFieldAutoSize.LEFT;
+			
+			switch(yrel) {
+				case top:
+					label.x = -label.width / 2;
+					label.y = -label.height;
+				case bottom:
+					label.x = -label.width / 2;
+					label.y = 0;
+				case left:
+					label.x = -label.width;
+					label.y = -label.height / 2;
+				case right:
+					label.x = 0;
+					label.y = -label.height / 2;
+				case center:
+					label.x = -label.width / 2;
+					label.y = -label.height / 2;
+				case dist(x, y):
+					label.x = x;
+					label.y = y;
+			}
+			
+			label.x += pos.x;
+			label.y += pos.y;
+			
 			label.mouseEnabled = false;
 			addChild(label);
 		}

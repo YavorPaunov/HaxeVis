@@ -6,79 +6,48 @@ import flash.geom.Point;
  * ...
  * @author Yavor
  */
-
+using ChartElement.ChartElementStates;
+using Grid.LabelRelativePosition;
+using Grid.LabelPosition;
 class BubbleChart extends ScatterPlot
 {
 
-	public function new(data:DataSet) 
+	public function new(w:Float, h:Float, values:Array<Array<Float>>, labels:Array<Dynamic>, colors:Array<Int>, ?chartElementStates:ChartElementStates) 
 	{
-		super(data);
+		super(w, h, values, labels, colors, chartElementStates);
+		
+		showLabelsX = false;
+		showLabelsY = false;
+		
+		showLabelsZ = true;
+		zLabelPosition = point;
+		zLabelText = value;
 	}
 	
-	override private function drawSetItem(item:DataSetItem):Void 
-	{
-		graphics.beginFill(item.color, 0.5);
+	override private function drawItem(item:DataSetItem):Void {
 		var point:Point = new Point(item.x, item.y);
-		//var size:Float = item.z * _ratio.;
 		point = toGridPoint(point);
-		//graphics.lineStyle(0.5);
-		graphics.drawCircle(point.x, point.y, item.z);
+		
+		var element:ChartElement = new ChartElement(chartElementStates, item.color, [circle(item.z* (ratio.x + ratio.y) / 2)]);
+		element.x = point.x;
+		element.y = point.y;
+		addElement(element);
+		
+		var xrel:LabelRelativePosition, yrel:LabelRelativePosition;
+		xrel = center;
+		yrel = center;
+		
+		addLabel(item, point, xrel, yrel);
 	}
 	
-	override private function set_xTop(value:Float):Float 
-	{
-		_xTop = value;
-		draw();
-		return _xTop;
-	}
-	
-	override private function set_xBottom(value:Float):Float 
-	{
-		_xBottom = value;
-		draw();
-		return _xBottom;
-	}
-	
-	override private function set_xDel(value:Float):Float 
-	{
-		_xDel = value;
-		draw();
-		return _xDel;
-	}
-	
-	override private function set_yTop(value:Float):Float 
-	{
-		_yTop = value;
-		draw();
-		return _yTop;
+	override private function calculateLimits():Void {
+		super.calculateLimits();
+		
+		this.xTop += data.max(Axis.z);
+		this.yTop += data.max(Axis.z);
+		
+		this.xBottom -= data.max(Axis.z);
+		this.yBottom -= data.max(Axis.z);
 	}
 		
-	override private function set_yBottom(value:Float):Float 
-	{
-		
-		_yBottom = value;
-		draw();
-		return _yBottom;
-	}
-		
-	override private function set_yDel(value:Float):Float 
-	{
-		_yDel = value;
-		draw();
-		return _yDel;
-	}
-		
-	override private function set_lineAtZero(value:Bool):Bool 
-	{
-		_lineAtZero = value;
-		draw();
-		return _lineAtZero;
-	}
-		
-	override private function set_alwaysShowZero(value:Bool):Bool 
-	{
-		_alwaysShowZero = value;
-		draw();
-		return _alwaysShowZero;
-	}
 }

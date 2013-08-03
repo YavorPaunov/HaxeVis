@@ -94,6 +94,7 @@ class LineChart extends Grid {
 		calculateLimits();
 		distributeTicksDist(data.min(Axis.y), Axis.y);
 		distributeTicks(values.length, Axis.x);
+		
 	}
 
 	override private function draw():Void {
