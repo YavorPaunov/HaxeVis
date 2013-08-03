@@ -4,9 +4,12 @@ import flash.geom.Point;
 
 using com.haxevis.Grid;
 using ChartElement.ChartElementStates;
+using ChartElement.ChartElementShape;
 class LineChart extends Grid {
 
 	private var defaultColors:Array<Int>;
+	
+	public var pointShape:ChartElementShape;
 	
 	public function new (w:Float, h:Float, values:Array<Array<Float>>, labels:Array<Dynamic>, colors:Array<Int>, ?chartElementStates:ChartElementStates) {
 		super(w, h);
@@ -37,12 +40,12 @@ class LineChart extends Grid {
 					alpha:1
 				},
 				
-				hovered: { 
+				hovered: {
 					fillColor:item,
 					strokeColor:item,
 					strokeThickness:1,
 					width:0.5,
-					alpha:1
+					alpha:0.1
 				},
 				
 				selected: {
@@ -51,21 +54,37 @@ class LineChart extends Grid {
 					strokeThickness:1,
 					width:0.5,
 					alpha:1
+				},
+				
+				otherSelected: {
+					fillColor:item,
+					strokeColor:item,
+					strokeThickness:1,
+					width:0.5,
+					alpha:0.5
+				},
+				
+				otherHovered: {
+					fillColor:item,
+					strokeColor:item,
+					strokeThickness:1,
+					width:0.5,
+					alpha:0.5
 				}
 			}
 		} else {
 			this.chartElementStates = chartElementStates;
 		}
-				
+		this.pointShape = circle(3);
+		
 		this.showTicksY = false;
+		this.gridGraphics.ticks.color = this.gridGraphics.gridlines.color;
+
 		this.gridGraphics.ticks.alpha = 1;
 		this.gridGraphics.ticks.thickness = 1;
 		
 		this.gridGraphics.gridlines.alpha = 1;
 		this.gridGraphics.gridlines.thickness = 1;
-		
-		this.gridGraphics.borders.alpha = 1;
-		this.gridGraphics.borders.thickness = 1;
 		
 		this.showLabelsY = true;
 		
@@ -94,16 +113,15 @@ class LineChart extends Grid {
 					startPoint = toGridPoint(new Point(items.items[i - 1].x, items.items[i - 1].y));
 				}
 				
-				graphics.lineStyle(this.chartElementStates.normal.strokeThickness, items.color);
-				graphics.moveTo(startPoint.x, startPoint.y);
-				
 				var pointTo:Point = toGridPoint(new Point(item.x, item.y));
-				graphics.lineTo(pointTo.x, pointTo.y);
 				
-				var element:ChartElement = new ChartElement(this.chartElementStates, item.color, circle(3));
-				element.x = pointTo.x;
-				element.y = pointTo.y;
-				addChild(element);
+				//var element:ChartElement = new ChartElement(chartElementStates, item.color, [)]);
+				//addElement(lineElement); 
+				
+				var pointElement:ChartElement = new ChartElement(this.chartElementStates, item.color, [pointShape, polygon([startPoint.subtract(pointTo), {x:0, y:0}])]);
+				pointElement.x = pointTo.x;
+				pointElement.y = pointTo.y;
+				addElement(pointElement);
 				
 				var xrel:LabelRelativePosition, yrel:LabelRelativePosition;
 				switch(this.xLabelPosition) {

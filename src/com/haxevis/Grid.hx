@@ -258,7 +258,7 @@ class Grid extends Chart {
 			ticks: {
 				thickness:0,
 				alpha:0,
-				color:0xAAAAAA
+				color:0xDEDEDE
 			},
 			
 			gridlines: {
@@ -536,7 +536,7 @@ class Grid extends Chart {
 					label.x += pos.x;
 					//label.y += pos.y;
 			}
-			
+			label.mouseEnabled = false;
 			addChild(label);
 		}
 	}
@@ -593,7 +593,7 @@ class Grid extends Chart {
 		var ticks:Array<Float> = [];
 		var current = first;
 		
-		while (Std.int(current) <= max) {
+		while (Std.int(current) < max) {
 			trace(current, max);
 			ticks.push(current);
 			current += distance;

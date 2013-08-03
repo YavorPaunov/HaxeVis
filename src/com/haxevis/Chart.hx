@@ -1,12 +1,15 @@
 package com.haxevis;
 import flash.display.Sprite;
-
+import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.geom.Point;
 /**
  * ...
  * @author Yavor Paunov
  */
 
 
+using Lambda;
 using ChartElement.ChartElementStates;
 class Chart extends Sprite {
 	
@@ -22,6 +25,8 @@ class Chart extends Sprite {
 	
 	private var legend:Legend;
 	private var data:DataSet;
+	
+	private var elements:Array<ChartElement>;
 	
 	@:isVar public var chartElementStates(default, set):ChartElementStates;
 	function set_chartElementStates(value:ChartElementStates):ChartElementStates {
@@ -43,6 +48,23 @@ class Chart extends Sprite {
 	
 	function new() {
 		super();
+		elements = [];
+		addEventListener(Event.ADDED_TO_STAGE, added, false, 0, true);
+	}
+	
+	private function added(e:Event):Void {
+		removeEventListener(Event.ADDED_TO_STAGE, added);
+		stage.addEventListener(MouseEvent.CLICK, onClickHandler, false, 0, true);		
+	}
+	
+	private function onClickHandler(e:MouseEvent):Void {
+		var underMouse = stage.getObjectsUnderPoint(new Point(stage.mouseX, stage.mouseY));
+		for (thing in underMouse) {
+			if (Std.is(thing, ChartElement)) {
+				return;
+			}
+		}
+		onElementSelect(null);
 	}
 	
 	private function draw():Void {
@@ -65,9 +87,31 @@ class Chart extends Sprite {
 			legend = new Legend(data);
 		}
 		
-		legend.x = this.paddingLeft + this.w + 25;
+		legend.x = this.paddingLeft + this.w;
 		legend.y = this.paddingTop;
 		addChild(legend);
+	}
+	
+	private function addElement(element:ChartElement):Void {
+		addChildAt(element, 0);
+		elements.push(element);
+		element.onSelect = onElementSelect;
+	}
+	
+	private function removeElement(element:ChartElement):Void {
+		if (element.parent == this) {
+			removeChild(element);
+		}
+		var index = elements.indexOf(element);
+		if (index >= 0) {
+			elements.splice(index, 1);
+		}
+	}
+	
+	private function onElementSelect(element:ChartElement) {
+		for (e in elements) {
+			e.selected = element;
+		}
 	}
 	
 }

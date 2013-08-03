@@ -44,19 +44,37 @@ class BarChart extends Grid  implements IBars {
 					width:0.5,
 					alpha:1
 				},
+				
 				hovered: { 
 					fillColor:item,
 					strokeColor:item,
 					strokeThickness:1,
 					width:0.5,
-					alpha:1
+					alpha:0.5
 				},
+				
 				selected: {
 					fillColor:item,
 					strokeColor:item,
 					strokeThickness:1,
 					width:0.5,
 					alpha:1
+				},
+				
+				otherSelected: {
+					fillColor:item,
+					strokeColor:item,
+					strokeThickness:1,
+					width:0.5,
+					alpha:0.5
+				},
+				
+				otherHovered: {
+					fillColor:item,
+					strokeColor:item,
+					strokeThickness:1,
+					width:0.5,
+					alpha:0.5
 				}
 			}
 		} else {
@@ -72,10 +90,10 @@ class BarChart extends Grid  implements IBars {
 		
 		this.gridGraphics.ticks.alpha = 1;
 		this.gridGraphics.ticks.thickness = 1;
-		
-		
+				
 		calculateLimits();
 		distributeTicksDist(data.min(Axis.y), Axis.y);
+		distributeTicksDist(data.min(Axis.x), Axis.x, data.min(Axis.x)/2);
 	}
 
 	override private function draw():Void {
@@ -92,14 +110,14 @@ class BarChart extends Grid  implements IBars {
 				height = pos.y - bottom.y;
 				width = this.chartElementStates.normal.width * ratio.x;
 				
-				element = new ChartElement(chartElementStates, item.color, ChartElementShape.rect(width, height));
+				element = new ChartElement(chartElementStates, item.color, [rect(width, height)]);
 				element.x = pos.x;
 				element.y = bottom.y + height / 2;
 			} else {
 				height = this.chartElementStates.normal.width * ratio.y;
 				width = pos.x - bottom.x;
 				
-				element = new ChartElement(chartElementStates, item.color, ChartElementShape.rect(width, height));
+				element = new ChartElement(chartElementStates, item.color, [rect(width, height)]);
 				element.x = this.paddingLeft + width/2;
 				element.y = pos.y;
 			}
@@ -127,7 +145,7 @@ class BarChart extends Grid  implements IBars {
 					}
 			}
 			
-			addChild(element);
+			addElement(element);
 			addLabel(item, pos, xrel, yrel);
 		}
 	}	
